@@ -32,6 +32,11 @@ public static class LocalizationService
             ["Label.Resolution"] = "Resolution:",
             ["Label.EnableSlideshow"] = "Enable Slideshow",
             ["Label.Language"] = "Language:",
+            ["Label.Mode"] = "Mode",
+            ["Label.Folder"] = "Folder:",
+            ["Label.ImagesLoaded"] = "{0} images loaded",
+            ["Label.ModeSingle"] = "Single Image",
+            ["Label.ModeSlideshow"] = "Slideshow",
         },
         ["zh"] = new()
         {
@@ -56,6 +61,11 @@ public static class LocalizationService
             ["Label.Resolution"] = "分辨率:",
             ["Label.EnableSlideshow"] = "启用幻灯片",
             ["Label.Language"] = "语言:",
+            ["Label.Mode"] = "模式",
+            ["Label.Folder"] = "文件夹:",
+            ["Label.ImagesLoaded"] = "已加载 {0} 张图片",
+            ["Label.ModeSingle"] = "单张图片",
+            ["Label.ModeSlideshow"] = "幻灯片",
         }
     };
 

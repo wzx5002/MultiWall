@@ -15,59 +15,42 @@
                     <Border BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
                             BorderThickness="1" CornerRadius="8"
                             Margin="0,0,0,10" Padding="14">
-                        <Grid ColumnDefinitions="120,*,Auto"
+                        <Grid ColumnDefinitions="180,*,Auto"
                               RowDefinitions="Auto,Auto,Auto,Auto"
                               ColumnSpacing="14">
 
-                            <!-- Monitor icon placeholder -->
                             <Border Grid.Column="0" Grid.RowSpan="4"
-                                    Width="110" Height="106"
-                                    CornerRadius="4"
+                                    Width="170" Height="106"
+                                    CornerRadius="4" ClipToBounds="True"
                                     Background="{DynamicResource SystemControlBackgroundAltLowBrush}">
-                                <TextBlock Text="{Binding DisplayName}"
-                                           FontSize="20" FontWeight="Bold"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+                                <Image Source="{Binding Thumbnail}"
+                                       Stretch="UniformToFill"
+                                       Width="170" Height="106"/>
                             </Border>
 
-                            <!-- Monitor name -->
                             <TextBlock Grid.Column="1" Grid.Row="0"
                                        Text="{Binding DisplayName}"
-                                       FontWeight="Bold" FontSize="16"
-                                       Margin="0,0,0,2"/>
-
-                            <!-- Resolution / Bounds -->
+                                       FontWeight="Bold" FontSize="16" Margin="0,0,0,2"/>
                             <TextBlock Grid.Column="1" Grid.Row="1"
-                                       Text="{Binding BoundsText}"
-                                       FontSize="12"
+                                       Text="{Binding BoundsText}" FontSize="12"
                                        Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                        Margin="0,0,0,4"/>
-
-                            <!-- Current wallpaper path -->
                             <TextBlock Grid.Column="1" Grid.Row="2"
-                                       Text="{Binding WallpaperPath}"
-                                       TextTrimming="CharacterEllipsis"
+                                       Text="{Binding WallpaperPath}" TextTrimming="CharacterEllipsis"
                                        FontSize="11"
                                        Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}"
                                        Margin="0,0,0,6"/>
-
-                            <!-- Action buttons -->
                             <StackPanel Grid.Column="1" Grid.Row="3"
                                         Orientation="Horizontal" Spacing="6">
                                 <Button Content="{DynamicResource Button.Configure}"
                                         Command="{ReflectionBinding $parent[Window].DataContext.NavigateToSettingsCommand}"
                                         CommandParameter="{Binding}"
-                                        FontSize="12" Padding="10,5"
-                                        CornerRadius="4"/>
+                                        FontSize="12" Padding="10,5" CornerRadius="4"/>
                             </StackPanel>
 
-                            <!-- Slideshow status -->
                             <StackPanel Grid.Column="2" Grid.Row="0" Grid.RowSpan="4"
-                                        Width="90"
-                                        VerticalAlignment="Center"
-                                        HorizontalAlignment="Center"
-                                        Spacing="6">
+                                        Width="90" VerticalAlignment="Center"
+                                        HorizontalAlignment="Center" Spacing="6">
                                 <Border Background="{DynamicResource SystemAccentColor}"
                                         CornerRadius="10" Padding="8,3"
                                         IsVisible="{Binding IsSlideshow}">
@@ -75,8 +58,7 @@
                                                FontSize="11" Foreground="White"/>
                                 </Border>
                                 <TextBlock Text="{Binding SlideshowImages.Count, StringFormat='{}{0} images'}"
-                                           HorizontalAlignment="Center"
-                                           FontSize="11"
+                                           HorizontalAlignment="Center" FontSize="11"
                                            IsVisible="{Binding IsSlideshow}"/>
                             </StackPanel>
                         </Grid>

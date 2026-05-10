@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:models="using:MultiWall.Models"
+             xmlns:services="using:MultiWall.Services"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
@@ -9,23 +10,16 @@
              d:DesignWidth="800" d:DesignHeight="600">
 
     <ScrollViewer>
-        <StackPanel Spacing="16" Margin="20,16">
+        <StackPanel Spacing="14" Margin="20,16">
 
-            <!-- Header -->
-            <TextBlock Text="{Binding DisplayName}"
-                       FontSize="22" FontWeight="Bold"/>
+            <TextBlock Text="{Binding DisplayName}" FontSize="22" FontWeight="Bold"/>
 
-            <!-- Preview -->
             <Border CornerRadius="8" ClipToBounds="True"
                     Background="{DynamicResource SystemControlBackgroundAltLowBrush}"
-                    Height="240"
-                    HorizontalAlignment="Left" Width="480">
-                <Image Source="{Binding Preview}"
-                       Stretch="UniformToFill"
-                       Width="480" Height="240"/>
+                    Height="240" HorizontalAlignment="Left" Width="480">
+                <Image Source="{Binding Preview}" Stretch="UniformToFill" Width="480" Height="240"/>
             </Border>
 
-            <!-- Monitor Info -->
             <Border Padding="14" CornerRadius="6"
                     BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
                     BorderThickness="1">
@@ -36,8 +30,8 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="6">
                         <TextBlock Text="{DynamicResource Label.CurrentWallpaper}" FontSize="13" FontWeight="Medium"/>
-                        <TextBlock Text="{Binding WallpaperPath}"
-                                   FontSize="13" TextTrimming="CharacterEllipsis"
+                        <TextBlock Text="{Binding WallpaperPath}" FontSize="13"
+                                   TextTrimming="CharacterEllipsis"
                                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
                     </StackPanel>
                 </StackPanel>
@@ -48,13 +42,11 @@
                     BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
                     BorderThickness="1">
                 <StackPanel Spacing="10">
-                    <TextBlock Text="Mode" FontSize="14" FontWeight="Bold"/>
-                    <ComboBox SelectedIndex="{Binding ModeIndex}"
-                              Width="200" Height="30"
-                              VerticalAlignment="Center">
+                    <TextBlock Text="{DynamicResource Label.Mode}" FontSize="14" FontWeight="Bold"/>
+                    <ComboBox SelectedIndex="{Binding ModeIndex}" Width="200" Height="30">
                         <ComboBox.Items>
-                            <x:String>Single Image</x:String>
-                            <x:String>Slideshow</x:String>
+                            <TextBlock Text="{DynamicResource Label.ModeSingle}"/>
+                            <TextBlock Text="{DynamicResource Label.ModeSlideshow}"/>
                         </ComboBox.Items>
                     </ComboBox>
                 </StackPanel>
@@ -63,59 +55,74 @@
             <!-- Single Image panel -->
             <Border Padding="14" CornerRadius="6"
                     BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                    BorderThickness="1"
-                    IsVisible="{Binding !IsSlideshow}">
+                    BorderThickness="1" IsVisible="{Binding !IsSlideshow}">
                 <StackPanel Spacing="10">
-                    <TextBlock Text="{DynamicResource Label.SingleImage}"
-                               FontSize="15" FontWeight="Bold"/>
-                    <TextBlock Text="{Binding WallpaperPath}"
-                               FontSize="12" TextTrimming="CharacterEllipsis"
+                    <TextBlock Text="{DynamicResource Label.SingleImage}" FontSize="15" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding WallpaperPath}" FontSize="12"
+                               TextTrimming="CharacterEllipsis"
                                Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
                     <Button Content="{DynamicResource Button.Browse}"
                             Command="{ReflectionBinding $parent[Window].DataContext.BrowseSingleImageCommand}"
-                            HorizontalAlignment="Left" Padding="14,6"
-                            CornerRadius="4"/>
+                            HorizontalAlignment="Left" Padding="14,6" CornerRadius="4"/>
                 </StackPanel>
             </Border>
 
             <!-- Slideshow panel -->
             <Border Padding="14" CornerRadius="6"
                     BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                    BorderThickness="1"
-                    IsVisible="{Binding IsSlideshow}">
+                    BorderThickness="1" IsVisible="{Binding IsSlideshow}">
                 <StackPanel Spacing="10">
-                    <TextBlock Text="{DynamicResource Label.Slideshow}"
-                               FontSize="15" FontWeight="Bold"/>
+                    <TextBlock Text="{DynamicResource Label.Slideshow}" FontSize="15" FontWeight="Bold"/>
 
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <TextBlock Text="Folder:" FontSize="13" VerticalAlignment="Center" FontWeight="Medium"/>
+                        <TextBlock Text="{DynamicResource Label.Folder}" FontSize="13"
+                                   VerticalAlignment="Center" FontWeight="Medium"/>
                         <TextBlock Text="{Binding SlideshowImages.Count, StringFormat='{}{0} images loaded'}"
-                                   FontSize="13"
-                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                                   VerticalAlignment="Center"/>
+                                   FontSize="13" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
                     </StackPanel>
 
                     <Button Content="{DynamicResource Button.SlideshowFolder}"
                             Command="{ReflectionBinding $parent[Window].DataContext.BrowseSlideshowFolderCommand}"
-                            HorizontalAlignment="Left" Padding="14,6"
-                            CornerRadius="4"/>
+                            HorizontalAlignment="Left" Padding="14,6" CornerRadius="4"/>
 
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBlock Text="{DynamicResource Label.Interval}" FontSize="13" VerticalAlignment="Center"/>
-                        <TextBox Text="{ReflectionBinding $parent[Window].DataContext.SlideshowInterval}"
+                        <TextBox Text="{Binding SlideshowInterval}"
                                  Width="60" Height="28"
                                  VerticalContentAlignment="Center"
                                  HorizontalContentAlignment="Center"/>
                         <TextBlock Text="{DynamicResource Label.Seconds}" FontSize="13" VerticalAlignment="Center"/>
                     </StackPanel>
+
+                    <Button Content="{Binding SlideshowToggleText}"
+                            Command="{ReflectionBinding $parent[Window].DataContext.ToggleMonitorSlideshowCommand}"
+                            HorizontalAlignment="Left" Padding="14,6" CornerRadius="4"/>
                 </StackPanel>
             </Border>
 
-            <!-- Clear -->
+            <!-- Position -->
+            <Border Padding="14" CornerRadius="6"
+                    BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                    BorderThickness="1">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="{DynamicResource Label.Position}" FontSize="14" FontWeight="Bold"/>
+                    <ComboBox SelectedItem="{Binding Position}" Width="140" Height="30">
+                        <ComboBox.Items>
+                            <services:DesktopWallpaperPosition>Center</services:DesktopWallpaperPosition>
+                            <services:DesktopWallpaperPosition>Tile</services:DesktopWallpaperPosition>
+                            <services:DesktopWallpaperPosition>Stretch</services:DesktopWallpaperPosition>
+                            <services:DesktopWallpaperPosition>Fit</services:DesktopWallpaperPosition>
+                            <services:DesktopWallpaperPosition>Fill</services:DesktopWallpaperPosition>
+                            <services:DesktopWallpaperPosition>Span</services:DesktopWallpaperPosition>
+                        </ComboBox.Items>
+                    </ComboBox>
+                </StackPanel>
+            </Border>
+
             <Button Content="{DynamicResource Button.Clear}"
                     Command="{ReflectionBinding $parent[Window].DataContext.ClearCurrentWallpaperCommand}"
-                    HorizontalAlignment="Left" Padding="14,6"
-                    CornerRadius="4"
+                    HorizontalAlignment="Left" Padding="14,6" CornerRadius="4"
                     Background="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
 
         </StackPanel>

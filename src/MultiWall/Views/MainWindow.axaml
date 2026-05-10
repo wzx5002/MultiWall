@@ -17,56 +17,23 @@
     </Design.DataContext>
 
     <DockPanel>
-        <!-- Toolbar -->
         <Border DockPanel.Dock="Top" Padding="12,10"
                 BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
                 BorderThickness="0,0,0,1">
             <StackPanel Orientation="Horizontal" Spacing="8">
-
                 <Button Content="{DynamicResource Button.Back}"
                         Command="{Binding GoBackCommand}"
                         IsVisible="{Binding IsSettingsOpen}"
                         Width="60" Height="30"/>
-
                 <Button Content="{DynamicResource Button.Refresh}"
                         Command="{Binding RefreshMonitorsCommand}"
                         Width="70" Height="30"/>
-
                 <Separator Width="1" Height="18"
                            Background="{DynamicResource SystemControlForegroundBaseLowBrush}"
                            VerticalAlignment="Center"/>
-
-                <TextBlock Text="{DynamicResource Label.Position}" VerticalAlignment="Center" FontSize="13"/>
-                <ComboBox ItemsSource="{Binding AvailablePositions}"
-                          SelectedItem="{Binding Position}"
-                          Width="100" Height="30"
-                          VerticalAlignment="Center"/>
-
-                <Separator Width="1" Height="18"
-                           Background="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                           VerticalAlignment="Center"/>
-
-                <TextBlock Text="{DynamicResource Label.Interval}" VerticalAlignment="Center" FontSize="13"/>
-                <TextBox Text="{Binding SlideshowInterval}"
-                         Width="60" Height="30"
-                         VerticalAlignment="Center"
-                         VerticalContentAlignment="Center"
-                         HorizontalContentAlignment="Center"/>
-                <TextBlock Text="{DynamicResource Label.Seconds}" VerticalAlignment="Center" FontSize="13"
-                           Margin="-6,0,0,0"/>
-
-                <Button Content="{Binding ToggleButtonText}"
-                        Command="{Binding ToggleSlideshowCommand}"
-                        Width="70" Height="30"/>
-
-                <Separator Width="1" Height="18"
-                           Background="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                           VerticalAlignment="Center"/>
-
                 <TextBlock Text="{DynamicResource Label.Language}" VerticalAlignment="Center" FontSize="13"/>
                 <ComboBox SelectedItem="{Binding CurrentLanguage}"
-                          Width="70" Height="30"
-                          VerticalAlignment="Center">
+                          Width="70" Height="30" VerticalAlignment="Center">
                     <ComboBox.Items>
                         <x:String>en</x:String>
                         <x:String>zh</x:String>
@@ -75,12 +42,8 @@
             </StackPanel>
         </Border>
 
-        <!-- Content area -->
         <Grid>
-            <!-- Monitor list: always present, hidden when settings open -->
             <views:MonitorListView IsVisible="{Binding !IsSettingsOpen}"/>
-
-            <!-- Settings: only created when a monitor is selected -->
             <ContentControl Content="{Binding SelectedMonitor}"
                            IsVisible="{Binding IsSettingsOpen}">
                 <ContentControl.ContentTemplate>
