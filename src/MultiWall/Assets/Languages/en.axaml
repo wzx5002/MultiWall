@@ -35,4 +35,10 @@
     <sys:String x:Key="Button.Settings">Settings</sys:String>
     <sys:String x:Key="Tray.Show">Show</sys:String>
     <sys:String x:Key="Tray.Exit">Exit</sys:String>
+    <sys:String x:Key="Label.Version">Version:</sys:String>
+    <sys:String x:Key="Button.CheckUpdate">Check for Updates</sys:String>
+    <sys:String x:Key="Label.UpdateAvailable">Update v{0} available (current: v{1})</sys:String>
+    <sys:String x:Key="Label.UpToDate">Already up to date</sys:String>
+    <sys:String x:Key="Label.Downloading">Downloading...</sys:String>
+    <sys:String x:Key="Label.Updating">Installing update, restarting...</sys:String>
 </ResourceDictionary>
