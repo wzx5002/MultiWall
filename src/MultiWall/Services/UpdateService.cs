@@ -91,9 +91,15 @@ public static class UpdateService
                 ReleaseNotes = releaseNotes
             };
         }
-        catch
+        catch (Exception ex)
         {
-            return null;
+            return new UpdateResult
+            {
+                UpdateAvailable = false,
+                CurrentVersion = CurrentVersion,
+                LatestVersion = "",
+                ErrorMessage = ex.Message
+            };
         }
     }
 
@@ -173,4 +179,7 @@ public class UpdateResult
     public string DownloadUrl { get; init; } = "";
     public long FileSize { get; init; }
     public string ReleaseNotes { get; init; } = "";
+    public string ErrorMessage { get; init; } = "";
+
+    public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
 }

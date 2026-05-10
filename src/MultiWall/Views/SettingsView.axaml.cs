@@ -34,9 +34,9 @@ public partial class SettingsView : UserControl
         CheckUpdateBtn.IsEnabled = true;
         CheckUpdateBtn.Content = LocalizationService.GetString("Button.CheckUpdate");
 
-        if (_updateResult == null)
+        if (_updateResult == null || _updateResult.HasError)
         {
-            StatusLabel.Text = LocalizationService.GetString("Label.UpToDate");
+            StatusLabel.Text = _updateResult?.ErrorMessage ?? "Check failed";
             return;
         }
 
