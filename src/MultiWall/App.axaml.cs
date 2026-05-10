@@ -18,6 +18,8 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            LocalizationService.SetLanguage("en");
+
             desktop.MainWindow = new MainWindow
             {
                 DataContext = new MainWindowViewModel(new WallpaperService()),

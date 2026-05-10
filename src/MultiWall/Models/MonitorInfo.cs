@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Avalonia.Media.Imaging;
@@ -6,7 +7,7 @@ using MultiWall.Services;
 
 namespace MultiWall.Models;
 
-public partial class MonitorInfo : ObservableObject
+public partial class MonitorInfo : ObservableObject, IDisposable
 {
     [ObservableProperty] private int _index;
     [ObservableProperty] private string _devicePath = string.Empty;
@@ -18,6 +19,9 @@ public partial class MonitorInfo : ObservableObject
     [ObservableProperty] private bool _isSlideshow;
     [ObservableProperty] private List<string> _slideshowImages = [];
     [ObservableProperty] private int _currentSlideshowIndex;
+
+    private Bitmap? _cachedPreview;
+    private string? _cachedPreviewPath;
 
     public string DisplayName => LocalizationService.CurrentLanguage == "zh"
         ? $"显示器 {Index + 1}"
@@ -32,13 +36,40 @@ public partial class MonitorInfo : ObservableObject
         get
         {
             if (string.IsNullOrEmpty(WallpaperPath) || !File.Exists(WallpaperPath))
+            {
+                ReleaseCachedPreview();
                 return null;
-            try { return new Bitmap(WallpaperPath); }
-            catch { return null; }
+            }
+
+            if (_cachedPreviewPath == WallpaperPath && _cachedPreview != null)
+                return _cachedPreview;
+
+            ReleaseCachedPreview();
+
+            try
+            {
+                _cachedPreview = new Bitmap(WallpaperPath);
+                _cachedPreviewPath = WallpaperPath;
+                return _cachedPreview;
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 
     public void RefreshDisplayName() => OnPropertyChanged(nameof(DisplayName));
+
+    private void ReleaseCachedPreview()
+    {
+        if (_cachedPreview != null)
+        {
+            _cachedPreview.Dispose();
+            _cachedPreview = null;
+            _cachedPreviewPath = null;
+        }
+    }
 
     partial void OnIndexChanged(int value) => OnPropertyChanged(nameof(DisplayName));
     partial void OnWallpaperPathChanged(string value) => OnPropertyChanged(nameof(Preview));
@@ -52,5 +83,10 @@ public partial class MonitorInfo : ObservableObject
         OnPropertyChanged(nameof(Width));
         OnPropertyChanged(nameof(Height));
         OnPropertyChanged(nameof(BoundsText));
+    }
+
+    public void Dispose()
+    {
+        ReleaseCachedPreview();
     }
 }
