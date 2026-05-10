@@ -178,7 +178,7 @@ public partial class App : Application
         var win = new Window
         {
             Title = LocalizationService.GetString("Label.Settings"),
-            Width = 360, Height = 240,
+            Width = 360, Height = 360,
             Content = settings,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             CanResize = false
