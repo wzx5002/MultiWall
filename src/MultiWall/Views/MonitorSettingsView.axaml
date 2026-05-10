@@ -15,7 +15,7 @@
             <TextBlock Text="{Binding DisplayName}"
                        FontSize="22" FontWeight="Bold"/>
 
-            <!-- Large Preview -->
+            <!-- Preview -->
             <Border CornerRadius="8" ClipToBounds="True"
                     Background="{DynamicResource SystemControlBackgroundAltLowBrush}"
                     Height="240"
@@ -43,13 +43,34 @@
                 </StackPanel>
             </Border>
 
-            <!-- Single Image Section -->
+            <!-- Mode selector -->
             <Border Padding="14" CornerRadius="6"
                     BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
                     BorderThickness="1">
                 <StackPanel Spacing="10">
+                    <TextBlock Text="Mode" FontSize="14" FontWeight="Bold"/>
+                    <ComboBox SelectedIndex="{Binding ModeIndex}"
+                              Width="200" Height="30"
+                              VerticalAlignment="Center">
+                        <ComboBox.Items>
+                            <x:String>Single Image</x:String>
+                            <x:String>Slideshow</x:String>
+                        </ComboBox.Items>
+                    </ComboBox>
+                </StackPanel>
+            </Border>
+
+            <!-- Single Image panel -->
+            <Border Padding="14" CornerRadius="6"
+                    BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                    BorderThickness="1"
+                    IsVisible="{Binding !IsSlideshow}">
+                <StackPanel Spacing="10">
                     <TextBlock Text="{DynamicResource Label.SingleImage}"
                                FontSize="15" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding WallpaperPath}"
+                               FontSize="12" TextTrimming="CharacterEllipsis"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
                     <Button Content="{DynamicResource Button.Browse}"
                             Command="{ReflectionBinding $parent[Window].DataContext.BrowseSingleImageCommand}"
                             HorizontalAlignment="Left" Padding="14,6"
@@ -57,13 +78,22 @@
                 </StackPanel>
             </Border>
 
-            <!-- Slideshow Section -->
+            <!-- Slideshow panel -->
             <Border Padding="14" CornerRadius="6"
                     BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                    BorderThickness="1">
+                    BorderThickness="1"
+                    IsVisible="{Binding IsSlideshow}">
                 <StackPanel Spacing="10">
                     <TextBlock Text="{DynamicResource Label.Slideshow}"
                                FontSize="15" FontWeight="Bold"/>
+
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="Folder:" FontSize="13" VerticalAlignment="Center" FontWeight="Medium"/>
+                        <TextBlock Text="{Binding SlideshowImages.Count, StringFormat='{}{0} images loaded'}"
+                                   FontSize="13"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
 
                     <Button Content="{DynamicResource Button.SlideshowFolder}"
                             Command="{ReflectionBinding $parent[Window].DataContext.BrowseSlideshowFolderCommand}"
@@ -78,11 +108,6 @@
                                  HorizontalContentAlignment="Center"/>
                         <TextBlock Text="{DynamicResource Label.Seconds}" FontSize="13" VerticalAlignment="Center"/>
                     </StackPanel>
-
-                    <TextBlock Text="{Binding SlideshowImages.Count, StringFormat='{}{0} images loaded'}"
-                               FontSize="13"
-                               IsVisible="{Binding IsSlideshow}"
-                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
                 </StackPanel>
             </Border>
 

@@ -90,6 +90,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private void GoBack()
     {
+        SelectedMonitor?.ReleasePreview();
         SelectedMonitor = null;
     }
 
@@ -120,7 +121,7 @@ public partial class MainWindowViewModel : ViewModelBase
         var path = files[0].Path.LocalPath;
         _wallpaperService.SetWallpaper(SelectedMonitor.DevicePath, path);
         SelectedMonitor.WallpaperPath = path;
-        SelectedMonitor.IsSlideshow = false;
+        SelectedMonitor.Mode = WallpaperMode.SingleImage;
     }
 
     // -- Slideshow folder --
@@ -153,7 +154,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
         SelectedMonitor.SlideshowImages = images;
         SelectedMonitor.CurrentSlideshowIndex = 0;
-        SelectedMonitor.IsSlideshow = true;
+        SelectedMonitor.Mode = WallpaperMode.Slideshow;
         _wallpaperService.SetWallpaper(SelectedMonitor.DevicePath, images[0]);
         SelectedMonitor.WallpaperPath = images[0];
     }
@@ -166,7 +167,7 @@ public partial class MainWindowViewModel : ViewModelBase
         if (SelectedMonitor == null) return;
         _wallpaperService.ClearWallpaper(SelectedMonitor.DevicePath);
         SelectedMonitor.WallpaperPath = string.Empty;
-        SelectedMonitor.IsSlideshow = false;
+        SelectedMonitor.Mode = WallpaperMode.SingleImage;
         SelectedMonitor.SlideshowImages = [];
     }
 
@@ -209,7 +210,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         foreach (var monitor in Monitors)
         {
-            if (!monitor.IsSlideshow || monitor.SlideshowImages.Count == 0) continue;
+            if (monitor.Mode != WallpaperMode.Slideshow || monitor.SlideshowImages.Count == 0) continue;
 
             monitor.CurrentSlideshowIndex = (monitor.CurrentSlideshowIndex + 1)
                 % monitor.SlideshowImages.Count;

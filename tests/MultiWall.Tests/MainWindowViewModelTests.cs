@@ -3,6 +3,7 @@ using MultiWall.Services;
 using MultiWall.ViewModels;
 using NSubstitute;
 using Xunit;
+using static MultiWall.Models.WallpaperMode;
 
 namespace MultiWall.Tests;
 
@@ -71,7 +72,7 @@ public class MainWindowViewModelTests
             Index = 0,
             DevicePath = "MONITOR1",
             WallpaperPath = @"C:\img.jpg",
-            IsSlideshow = true,
+            Mode = Slideshow,
             SlideshowImages = [@"C:\img1.jpg", @"C:\img2.jpg"]
         };
 
@@ -80,7 +81,7 @@ public class MainWindowViewModelTests
 
         wallpaper.Received(1).ClearWallpaper("MONITOR1");
         Assert.Empty(monitor.WallpaperPath);
-        Assert.False(monitor.IsSlideshow);
+        Assert.Equal(SingleImage, monitor.Mode);
         Assert.Empty(monitor.SlideshowImages);
     }
 

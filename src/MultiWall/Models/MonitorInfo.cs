@@ -16,7 +16,7 @@ public partial class MonitorInfo : ObservableObject, IDisposable
     [ObservableProperty] private int _right;
     [ObservableProperty] private int _bottom;
     [ObservableProperty] private string _wallpaperPath = string.Empty;
-    [ObservableProperty] private bool _isSlideshow;
+    [ObservableProperty] private WallpaperMode _mode = WallpaperMode.SingleImage;
     [ObservableProperty] private List<string> _slideshowImages = [];
     [ObservableProperty] private int _currentSlideshowIndex;
 
@@ -30,6 +30,14 @@ public partial class MonitorInfo : ObservableObject, IDisposable
     public int Width => Right - Left;
     public int Height => Bottom - Top;
     public string BoundsText => $"{Width} x {Height}  ({Left}, {Top})";
+
+    public bool IsSlideshow => Mode == WallpaperMode.Slideshow;
+
+    public int ModeIndex
+    {
+        get => (int)Mode;
+        set => Mode = (WallpaperMode)value;
+    }
 
     public Bitmap? Preview
     {
@@ -61,6 +69,8 @@ public partial class MonitorInfo : ObservableObject, IDisposable
 
     public void RefreshDisplayName() => OnPropertyChanged(nameof(DisplayName));
 
+    public void ReleasePreview() => ReleaseCachedPreview();
+
     private void ReleaseCachedPreview()
     {
         if (_cachedPreview != null)
@@ -69,6 +79,12 @@ public partial class MonitorInfo : ObservableObject, IDisposable
             _cachedPreview = null;
             _cachedPreviewPath = null;
         }
+    }
+
+    partial void OnModeChanged(WallpaperMode value)
+    {
+        OnPropertyChanged(nameof(ModeIndex));
+        OnPropertyChanged(nameof(IsSlideshow));
     }
 
     partial void OnIndexChanged(int value) => OnPropertyChanged(nameof(DisplayName));
