@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.1.1
+
+### 新增
+- 任务栏图标（`MainWindow.Icon` 加载 `resource/avalonia-logo.ico`）
+- 幻灯片随机顺序播放（`SlideshowShuffle` checkbox）
+
+### 修复
+- 设置窗口高度不足导致更新控件不可见（240 → 360）
+
+## v1.1.0
+
+### 新增
+- 自动检查更新（GitHub Releases API → 下载 → 替换 → 重启）
+- 设置页面底部显示当前版本号 + 检查更新按钮
+- 自动识别 fd/sc 部署类型下载对应 zip
+- `update.bat` 脚本实现无感替换
+
 ## 2026-05-10
 
 ### 新增

@@ -31,7 +31,7 @@ publish/
 ├── MultiWall.exe              # 入口
 ├── MultiWall.dll / *.dll      # 主程序 + 所有依赖 DLL
 ├── resource/                  # 外部资源
-│   ├── avalonia-logo.ico      # 托盘图标
+│   ├── avalonia-logo.ico      # 托盘图标 / 任务栏图标
 │   └── Languages/
 │       ├── en.axaml           # 英文字符串
 │       └── zh.axaml           # 中文字符串
@@ -39,3 +39,15 @@ publish/
 ```
 
 > 托管 DLL 保留在根目录是因为 .NET 的 TPA 机制不支持在 framework-dependent 部署下从子目录加载托管程序集。
+
+## 功能
+
+- 多显示器独立壁纸设置（单张图片 / 幻灯片）
+- 幻灯片支持间隔设置、启停、随机顺序
+- 系统托盘图标 + 右键菜单
+- 任务栏图标
+- 开机自启
+- 中英双语
+- 配置持久化
+- 自动检查 GitHub Release 更新
+
