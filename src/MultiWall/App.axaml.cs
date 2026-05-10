@@ -1,9 +1,11 @@
 using System;
+using System.IO;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Platform;
 using Avalonia.Threading;
 using MultiWall.Models;
 using MultiWall.Services;
@@ -60,15 +62,21 @@ public partial class App : Application
     {
         try
         {
+            var uri = new Uri("avares://MultiWall/Assets/avalonia-logo.ico");
+            using var stream = AssetLoader.Open(uri);
             _trayIcon = new TrayIcon
             {
-                Icon = new WindowIcon("avares://MultiWall/Assets/avalonia-logo.ico"),
+                Icon = new WindowIcon(stream),
                 ToolTipText = "MultiWall"
             };
             _trayIcon.Clicked += (_, _) => ShowMainWindow();
             _trayIcon.Menu = new NativeMenu();
         }
-        catch { }
+        catch (Exception ex)
+        {
+            var logPath = Path.Combine(AppContext.BaseDirectory, "error.log");
+            File.WriteAllText(logPath, $"TrayIcon setup failed: {ex}");
+        }
     }
 
     private void RebuildTrayMenu()

@@ -15,6 +15,8 @@ public static class ConfigService
 
     public static string ConfigPath => Path.Combine(AppContext.BaseDirectory, "config.json");
 
+    private static string ErrorLogPath => Path.Combine(AppContext.BaseDirectory, "error.log");
+
     public static AppConfig Load()
     {
         try
@@ -22,10 +24,14 @@ public static class ConfigService
             if (File.Exists(ConfigPath))
             {
                 var json = File.ReadAllText(ConfigPath);
-                return JsonSerializer.Deserialize<AppConfig>(json, JsonOptions) ?? new AppConfig();
+                var config = JsonSerializer.Deserialize<AppConfig>(json, JsonOptions);
+                if (config != null) return config;
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            try { File.WriteAllText(ErrorLogPath, $"ConfigService.Load failed: {ex}"); } catch { }
+        }
         return new AppConfig();
     }
 
@@ -36,6 +42,9 @@ public static class ConfigService
             var json = JsonSerializer.Serialize(config, JsonOptions);
             File.WriteAllText(ConfigPath, json);
         }
-        catch { }
+        catch (Exception ex)
+        {
+            try { File.WriteAllText(ErrorLogPath, $"ConfigService.Save failed: {ex}"); } catch { }
+        }
     }
 }

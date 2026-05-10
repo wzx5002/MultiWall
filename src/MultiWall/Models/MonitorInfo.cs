@@ -60,12 +60,15 @@ public partial class MonitorInfo : ObservableObject, IDisposable
         {
             if (string.IsNullOrEmpty(WallpaperPath) || !File.Exists(WallpaperPath))
             {
-                ReleaseCachedPreview();
+                _cachedPreview = null;
+                _cachedPreviewPath = null;
                 return null;
             }
             if (_cachedPreviewPath == WallpaperPath && _cachedPreview != null)
                 return _cachedPreview;
-            ReleaseCachedPreview();
+
+            _cachedPreview = null;
+            _cachedPreviewPath = null;
             try
             {
                 _cachedPreview = new Bitmap(WallpaperPath);
@@ -82,12 +85,15 @@ public partial class MonitorInfo : ObservableObject, IDisposable
         {
             if (string.IsNullOrEmpty(WallpaperPath) || !File.Exists(WallpaperPath))
             {
-                ReleaseCachedThumbnail();
+                _cachedThumbnail = null;
+                _cachedThumbnailPath = null;
                 return null;
             }
             if (_cachedThumbnailPath == WallpaperPath && _cachedThumbnail != null)
                 return _cachedThumbnail;
-            ReleaseCachedThumbnail();
+
+            _cachedThumbnail = null;
+            _cachedThumbnailPath = null;
             try
             {
                 using var original = new Bitmap(WallpaperPath);
@@ -104,21 +110,9 @@ public partial class MonitorInfo : ObservableObject, IDisposable
 
     public void RefreshDisplayName() => OnPropertyChanged(nameof(DisplayName));
 
-    public void ReleasePreview() => ReleaseCachedPreview();
-    public void ReleaseThumbnail() => ReleaseCachedThumbnail();
-    public void ReleaseAllPreviews() { ReleaseCachedPreview(); ReleaseCachedThumbnail(); }
-
-    private void ReleaseCachedPreview()
-    {
-        if (_cachedPreview != null) { _cachedPreview.Dispose(); _cachedPreview = null; _cachedPreviewPath = null; }
-    }
-
-    private void ReleaseCachedThumbnail()
-    {
-        if (_cachedThumbnail is IDisposable d) d.Dispose();
-        _cachedThumbnail = null;
-        _cachedThumbnailPath = null;
-    }
+    public void ReleasePreview() { _cachedPreview = null; _cachedPreviewPath = null; }
+    public void ReleaseThumbnail() { _cachedThumbnail = null; _cachedThumbnailPath = null; }
+    public void ReleaseAllPreviews() { ReleasePreview(); ReleaseThumbnail(); }
 
     partial void OnModeChanged(WallpaperMode value)
     {
@@ -152,7 +146,10 @@ public partial class MonitorInfo : ObservableObject, IDisposable
 
     public void Dispose()
     {
-        ReleaseCachedPreview();
-        ReleaseCachedThumbnail();
+        if (_cachedPreview != null) { _cachedPreview.Dispose(); _cachedPreview = null; }
+        if (_cachedThumbnail is IDisposable d) d.Dispose();
+        _cachedThumbnail = null;
+        _cachedPreviewPath = null;
+        _cachedThumbnailPath = null;
     }
 }
