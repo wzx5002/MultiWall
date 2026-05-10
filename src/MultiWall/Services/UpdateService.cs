@@ -91,14 +91,32 @@ public static class UpdateService
                 ReleaseNotes = releaseNotes
             };
         }
+        catch (HttpRequestException ex)
+        {
+            var code = ex.StatusCode.HasValue ? ((int)ex.StatusCode).ToString() : "N/A";
+            return new UpdateResult
+            {
+                UpdateAvailable = false,
+                CurrentVersion = CurrentVersion,
+                ErrorMessage = $"Network error (HTTP {code}): {ex.Message}"
+            };
+        }
+        catch (TaskCanceledException)
+        {
+            return new UpdateResult
+            {
+                UpdateAvailable = false,
+                CurrentVersion = CurrentVersion,
+                ErrorMessage = "Request timed out (check network)"
+            };
+        }
         catch (Exception ex)
         {
             return new UpdateResult
             {
                 UpdateAvailable = false,
                 CurrentVersion = CurrentVersion,
-                LatestVersion = "",
-                ErrorMessage = ex.Message
+                ErrorMessage = $"Error: {ex.GetType().Name} - {ex.Message}"
             };
         }
     }
