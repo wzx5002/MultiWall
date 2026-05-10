@@ -1,0 +1,146 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:MultiWall.ViewModels"
+        xmlns:models="using:MultiWall.Models"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="650"
+        x:Class="MultiWall.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="MultiWall - Multi-Monitor Wallpaper"
+        Width="900" Height="650"
+        MinWidth="650" MinHeight="400">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <DockPanel>
+        <!-- Toolbar -->
+        <Border DockPanel.Dock="Top" Padding="12,10"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                BorderThickness="0,0,0,1">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <Button Content="Refresh"
+                        Command="{Binding RefreshMonitorsCommand}"
+                        Width="70" Height="30"/>
+
+                <Separator Width="1" Height="18"
+                           Background="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                           VerticalAlignment="Center"/>
+
+                <TextBlock Text="Position:" VerticalAlignment="Center" FontSize="13"/>
+                <ComboBox ItemsSource="{Binding AvailablePositions}"
+                          SelectedItem="{Binding Position}"
+                          Width="100" Height="30"
+                          VerticalAlignment="Center"/>
+
+                <Separator Width="1" Height="18"
+                           Background="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                           VerticalAlignment="Center"/>
+
+                <TextBlock Text="Interval:" VerticalAlignment="Center" FontSize="13"/>
+                <TextBox Text="{Binding SlideshowInterval}"
+                         Width="60" Height="30"
+                         VerticalAlignment="Center"
+                         VerticalContentAlignment="Center"
+                         HorizontalContentAlignment="Center"/>
+                <TextBlock Text="s" VerticalAlignment="Center" FontSize="13"
+                           Margin="-6,0,0,0"/>
+
+                <Button Content="{Binding ToggleButtonText}"
+                        Command="{Binding ToggleSlideshowCommand}"
+                        Width="70" Height="30"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Monitor list -->
+        <ScrollViewer>
+            <ItemsControl ItemsSource="{Binding Monitors}" Margin="16,12">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="models:MonitorInfo">
+                        <Border BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                                BorderThickness="1" CornerRadius="8"
+                                Margin="0,0,0,10" Padding="14">
+                            <Grid ColumnDefinitions="180,*,Auto"
+                                  RowDefinitions="Auto,Auto,Auto,Auto"
+                                  ColumnSpacing="14">
+
+                                <!-- Preview thumbnail -->
+                                <Border Grid.Column="0" Grid.RowSpan="4"
+                                        Width="170" Height="106"
+                                        CornerRadius="4"
+                                        ClipToBounds="True"
+                                        Background="{DynamicResource SystemControlBackgroundAltLowBrush}">
+                                    <Image Source="{Binding Preview}"
+                                           Stretch="UniformToFill"
+                                           Width="170" Height="106"/>
+                                </Border>
+
+                                <!-- Monitor name -->
+                                <TextBlock Grid.Column="1" Grid.Row="0"
+                                           Text="{Binding DisplayName}"
+                                           FontWeight="Bold" FontSize="16"
+                                           Margin="0,0,0,2"/>
+
+                                <!-- Resolution / Bounds -->
+                                <TextBlock Grid.Column="1" Grid.Row="1"
+                                           Text="{Binding BoundsText}"
+                                           FontSize="12"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                           Margin="0,0,0,4"/>
+
+                                <!-- Current wallpaper path -->
+                                <TextBlock Grid.Column="1" Grid.Row="2"
+                                           Text="{Binding WallpaperPath}"
+                                           TextTrimming="CharacterEllipsis"
+                                           FontSize="11"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                                           Margin="0,0,0,6"/>
+
+                                <!-- Action buttons -->
+                                <StackPanel Grid.Column="1" Grid.Row="3"
+                                            Orientation="Horizontal" Spacing="6">
+                                    <Button Content="Single Image"
+                                            Command="{ReflectionBinding $parent[Window].DataContext.SetWallpaperCommand}"
+                                            CommandParameter="{Binding DevicePath}"
+                                            FontSize="12" Padding="10,5"
+                                            CornerRadius="4"/>
+                                    <Button Content="Folder Slideshow"
+                                            Command="{ReflectionBinding $parent[Window].DataContext.SetSlideshowFolderCommand}"
+                                            CommandParameter="{Binding DevicePath}"
+                                            FontSize="12" Padding="10,5"
+                                            CornerRadius="4"/>
+                                    <Button Content="Clear"
+                                            Command="{ReflectionBinding $parent[Window].DataContext.ClearWallpaperCommand}"
+                                            CommandParameter="{Binding DevicePath}"
+                                            FontSize="12" Padding="10,5"
+                                            CornerRadius="4"/>
+                                </StackPanel>
+
+                                <!-- Slideshow status column -->
+                                <StackPanel Grid.Column="2" Grid.Row="0" Grid.RowSpan="4"
+                                            Width="90"
+                                            VerticalAlignment="Center"
+                                            HorizontalAlignment="Center"
+                                            Spacing="6">
+                                    <Border Background="{DynamicResource SystemAccentColor}"
+                                            CornerRadius="10" Padding="8,3"
+                                            IsVisible="{Binding IsSlideshow}">
+                                        <TextBlock Text="Slideshow"
+                                                   FontSize="11" Foreground="White"/>
+                                    </Border>
+                                    <TextBlock Text="{Binding SlideshowImages.Count, StringFormat='{}{0} images'}"
+                                               HorizontalAlignment="Center"
+                                               FontSize="11"
+                                               IsVisible="{Binding IsSlideshow}"
+                                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

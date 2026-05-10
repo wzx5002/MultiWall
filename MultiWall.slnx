@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MultiWall/MultiWall.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/MultiWall.Tests/MultiWall.Tests.csproj" />
+  </Folder>
+</Solution>
