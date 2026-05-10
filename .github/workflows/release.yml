@@ -24,14 +24,22 @@ jobs:
       - name: Test
         run: dotnet test -c Release --no-build
 
-      - name: Publish
-        run: dotnet publish src/MultiWall/MultiWall.csproj -c Release -r win-x64 --self-contained -o publish
+      - name: Publish (self-contained)
+        run: dotnet publish src/MultiWall/MultiWall.csproj -c Release -r win-x64 --self-contained -o publish/sc
 
-      - name: Package
-        run: Compress-Archive -Path publish/* -DestinationPath MultiWall-win-x64.zip
+      - name: Publish (framework-dependent)
+        run: dotnet publish src/MultiWall/MultiWall.csproj -c Release -r win-x64 -o publish/fd
+
+      - name: Package (self-contained)
+        run: Compress-Archive -Path publish/sc/* -DestinationPath MultiWall-win-x64-sc.zip
+
+      - name: Package (framework-dependent)
+        run: Compress-Archive -Path publish/fd/* -DestinationPath MultiWall-win-x64-fd.zip
 
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          files: MultiWall-win-x64.zip
+          files: |
+            MultiWall-win-x64-sc.zip
+            MultiWall-win-x64-fd.zip
           generate_release_notes: true

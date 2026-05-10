@@ -33,7 +33,7 @@ jobs:
         run: dotnet test --no-build -c Release
 
       - name: Publish
-        run: dotnet publish src/MultiWall/MultiWall.csproj -c Release -r win-x64 --self-contained -o publish
+        run: dotnet publish src/MultiWall/MultiWall.csproj -c Release -r win-x64 -o publish
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

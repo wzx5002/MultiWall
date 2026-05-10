@@ -5,7 +5,6 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Avalonia.Platform;
 using Avalonia.Threading;
 using MultiWall.Models;
 using MultiWall.Services;
@@ -62,8 +61,8 @@ public partial class App : Application
     {
         try
         {
-            var uri = new Uri("avares://MultiWall/Assets/avalonia-logo.ico");
-            using var stream = AssetLoader.Open(uri);
+            var iconPath = Path.Combine(AppContext.BaseDirectory, "resource", "avalonia-logo.ico");
+            using var stream = File.OpenRead(iconPath);
             _trayIcon = new TrayIcon
             {
                 Icon = new WindowIcon(stream),

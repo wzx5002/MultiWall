@@ -24,4 +24,15 @@
     <sys:String x:Key="Label.Resolution">Resolution:</sys:String>
     <sys:String x:Key="Label.EnableSlideshow">Enable Slideshow</sys:String>
     <sys:String x:Key="Label.Language">Language:</sys:String>
+    <sys:String x:Key="Label.Mode">Mode</sys:String>
+    <sys:String x:Key="Label.Folder">Folder:</sys:String>
+    <sys:String x:Key="Label.ImagesLoaded">{0} images loaded</sys:String>
+    <sys:String x:Key="Label.ModeSingle">Single Image</sys:String>
+    <sys:String x:Key="Label.ModeSlideshow">Slideshow</sys:String>
+    <sys:String x:Key="Label.Settings">Settings</sys:String>
+    <sys:String x:Key="Label.AutoStart">Start with Windows</sys:String>
+    <sys:String x:Key="Label.MinimizeToTray">Minimize to system tray</sys:String>
+    <sys:String x:Key="Button.Settings">Settings</sys:String>
+    <sys:String x:Key="Tray.Show">Show</sys:String>
+    <sys:String x:Key="Tray.Exit">Exit</sys:String>
 </ResourceDictionary>

@@ -1,5 +1,6 @@
 using System;
-using System.Collections.Generic;
+using System.IO;
+using System.Xml.Linq;
 using Avalonia;
 using Avalonia.Controls;
 
@@ -7,79 +8,9 @@ namespace MultiWall.Services;
 
 public static class LocalizationService
 {
-    private static readonly Dictionary<string, Dictionary<string, string>> _strings = new()
-    {
-        ["en"] = new()
-        {
-            ["App.Title"] = "MultiWall - Multi-Monitor Wallpaper",
-            ["Button.Refresh"] = "Refresh",
-            ["Button.Start"] = "Start",
-            ["Button.Stop"] = "Stop",
-            ["Button.Back"] = "Back",
-            ["Button.Browse"] = "Browse",
-            ["Button.Configure"] = "Configure",
-            ["Button.Clear"] = "Clear",
-            ["Button.SlideshowFolder"] = "Select Folder",
-            ["Button.SingleImage"] = "Select Image",
-            ["Label.Position"] = "Position:",
-            ["Label.Interval"] = "Interval:",
-            ["Label.Seconds"] = "s",
-            ["Label.MonitorSettings"] = "Monitor Settings",
-            ["Label.NoMonitor"] = "No monitors detected",
-            ["Label.SingleImage"] = "Single Image",
-            ["Label.Slideshow"] = "Slideshow",
-            ["Label.CurrentWallpaper"] = "Current Wallpaper:",
-            ["Label.Resolution"] = "Resolution:",
-            ["Label.EnableSlideshow"] = "Enable Slideshow",
-            ["Label.Language"] = "Language:",
-            ["Label.Mode"] = "Mode",
-            ["Label.Folder"] = "Folder:",
-            ["Label.ImagesLoaded"] = "{0} images loaded",
-            ["Label.ModeSingle"] = "Single Image",
-            ["Label.ModeSlideshow"] = "Slideshow",
-            ["Label.Settings"] = "Settings",
-            ["Label.AutoStart"] = "Start with Windows",
-            ["Label.MinimizeToTray"] = "Minimize to system tray",
-            ["Button.Settings"] = "Settings",
-            ["Tray.Show"] = "Show",
-            ["Tray.Exit"] = "Exit",
-        },
-        ["zh"] = new()
-        {
-            ["App.Title"] = "MultiWall - 多显示器壁纸",
-            ["Button.Refresh"] = "刷新",
-            ["Button.Start"] = "开始",
-            ["Button.Stop"] = "停止",
-            ["Button.Back"] = "返回",
-            ["Button.Browse"] = "浏览",
-            ["Button.Configure"] = "配置",
-            ["Button.Clear"] = "清除",
-            ["Button.SlideshowFolder"] = "选择文件夹",
-            ["Button.SingleImage"] = "选择图片",
-            ["Label.Position"] = "排列方式:",
-            ["Label.Interval"] = "间隔:",
-            ["Label.Seconds"] = "秒",
-            ["Label.MonitorSettings"] = "显示器设置",
-            ["Label.NoMonitor"] = "未检测到显示器",
-            ["Label.SingleImage"] = "单张图片",
-            ["Label.Slideshow"] = "幻灯片",
-            ["Label.CurrentWallpaper"] = "当前壁纸:",
-            ["Label.Resolution"] = "分辨率:",
-            ["Label.EnableSlideshow"] = "启用幻灯片",
-            ["Label.Language"] = "语言:",
-            ["Label.Mode"] = "模式",
-            ["Label.Folder"] = "文件夹:",
-            ["Label.ImagesLoaded"] = "已加载 {0} 张图片",
-            ["Label.ModeSingle"] = "单张图片",
-            ["Label.ModeSlideshow"] = "幻灯片",
-            ["Label.Settings"] = "设置",
-            ["Label.AutoStart"] = "开机自启",
-            ["Label.MinimizeToTray"] = "最小化到系统托盘",
-            ["Button.Settings"] = "设置",
-            ["Tray.Show"] = "显示",
-            ["Tray.Exit"] = "退出",
-        }
-    };
+    private static readonly XNamespace AvaloniaNs = "https://github.com/avaloniaui";
+    private static readonly XNamespace XNs = "http://schemas.microsoft.com/winfx/2006/xaml";
+    private static readonly XNamespace SysNs = "clr-namespace:System;assembly=System.Runtime";
 
     public static string CurrentLanguage { get; private set; } = "en";
 
@@ -87,19 +18,11 @@ public static class LocalizationService
     {
         if (Application.Current?.TryFindResource(key, out var resource) == true && resource is string str)
             return str;
-
-        if (_strings.TryGetValue(CurrentLanguage, out var dict) &&
-            dict.TryGetValue(key, out var value))
-            return value;
-
         return key;
     }
 
     public static void SetLanguage(string language)
     {
-        if (!_strings.ContainsKey(language))
-            return;
-
         CurrentLanguage = language;
 
         if (Application.Current is not { } app)
@@ -107,11 +30,31 @@ public static class LocalizationService
 
         app.Resources.MergedDictionaries.Clear();
 
-        var dict = new ResourceDictionary();
-        var strings = _strings[language];
-        foreach (var kvp in strings)
-            dict.Add(kvp.Key, kvp.Value);
+        var filePath = Path.Combine(AppContext.BaseDirectory, "resource", "Languages", language + ".axaml");
+        if (!File.Exists(filePath))
+            return;
 
-        app.Resources.MergedDictionaries.Add(dict);
+        try
+        {
+            var xdoc = XDocument.Load(filePath);
+
+            if (xdoc.Root == null)
+                return;
+
+            var dict = new ResourceDictionary();
+
+            foreach (var elem in xdoc.Root.Elements(SysNs + "String"))
+            {
+                var key = (string?)elem.Attribute(XNs + "Key");
+                var value = (string?)elem;
+                if (key != null && value != null)
+                    dict.Add(key, value);
+            }
+
+            app.Resources.MergedDictionaries.Add(dict);
+        }
+        catch
+        {
+        }
     }
 }

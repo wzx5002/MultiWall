@@ -5,11 +5,14 @@
     <Nullable>enable</Nullable>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <SelfContained>false</SelfContained>
   </PropertyGroup>
 
   <ItemGroup>
     <Folder Include="Models\" />
-    <AvaloniaResource Include="Assets\**" />
+    <Content Include="Assets\avalonia-logo.ico" CopyToPublishDirectory="PreserveNewest" Link="resource\avalonia-logo.ico" />
+    <Content Include="Assets\Languages\*.axaml" CopyToPublishDirectory="PreserveNewest" Link="resource\Languages\%(Filename)%(Extension)" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,5 +27,23 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.1" />
   </ItemGroup>
 
+  <Target Name="OrganizePublishOutput" AfterTargets="Publish">
+    <MakeDir Directories="$(PublishDir)Lib" />
+    <ItemGroup>
+      <_HostDlls Include="$(PublishDir)coreclr.dll" />
+      <_HostDlls Include="$(PublishDir)clrjit.dll" />
+      <_HostDlls Include="$(PublishDir)clrcompression.dll" />
+      <_HostDlls Include="$(PublishDir)hostfxr.dll" />
+      <_HostDlls Include="$(PublishDir)hostpolicy.dll" />
+      <_NativeDlls Include="$(PublishDir)lib*.dll" />
+      <_NativeDlls Include="$(PublishDir)av_*.dll" />
+      <_NativePdbs Include="$(PublishDir)lib*.pdb" />
+      <_NativePdbs Include="$(PublishDir)av_*.pdb" />
+      <_DllsToMove Include="$(PublishDir)*.dll" Exclude="$(PublishDir)MultiWall.dll;@(_HostDlls);@(_NativeDlls)" />
+      <_PdbsToMove Include="$(PublishDir)*.pdb" Exclude="$(PublishDir)MultiWall.pdb;@(_NativePdbs)" />
+    </ItemGroup>
+    <Move SourceFiles="@(_DllsToMove)" DestinationFolder="$(PublishDir)Lib" />
+    <Move SourceFiles="@(_PdbsToMove)" DestinationFolder="$(PublishDir)Lib" />
+  </Target>
 
 </Project>

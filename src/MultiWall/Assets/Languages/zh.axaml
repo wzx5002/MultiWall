@@ -24,4 +24,15 @@
     <sys:String x:Key="Label.Resolution">分辨率:</sys:String>
     <sys:String x:Key="Label.EnableSlideshow">启用幻灯片</sys:String>
     <sys:String x:Key="Label.Language">语言:</sys:String>
+    <sys:String x:Key="Label.Mode">模式</sys:String>
+    <sys:String x:Key="Label.Folder">文件夹:</sys:String>
+    <sys:String x:Key="Label.ImagesLoaded">已加载 {0} 张图片</sys:String>
+    <sys:String x:Key="Label.ModeSingle">单张图片</sys:String>
+    <sys:String x:Key="Label.ModeSlideshow">幻灯片</sys:String>
+    <sys:String x:Key="Label.Settings">设置</sys:String>
+    <sys:String x:Key="Label.AutoStart">开机自启</sys:String>
+    <sys:String x:Key="Label.MinimizeToTray">最小化到系统托盘</sys:String>
+    <sys:String x:Key="Button.Settings">设置</sys:String>
+    <sys:String x:Key="Tray.Show">显示</sys:String>
+    <sys:String x:Key="Tray.Exit">退出</sys:String>
 </ResourceDictionary>
