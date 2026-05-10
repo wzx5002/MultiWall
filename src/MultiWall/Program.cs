@@ -1,18 +1,31 @@
-﻿using Avalonia;
-using System;
+﻿using System;
+using System.IO;
+using System.Reflection;
+using System.Runtime.Loader;
+using Avalonia;
 
 namespace MultiWall;
 
 sealed class Program
 {
-    // Initialization code. Don't use any Avalonia, third-party APIs or any
-    // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
-    // yet and stuff might break.
     [STAThread]
-    public static void Main(string[] args) => BuildAvaloniaApp()
-        .StartWithClassicDesktopLifetime(args);
+    public static void Main(string[] args)
+    {
+        var libPath = Path.Combine(AppContext.BaseDirectory, "lib");
+        if (Directory.Exists(libPath))
+        {
+            AssemblyLoadContext.Default.Resolving += (ctx, name) =>
+            {
+                var path = Path.Combine(libPath, name.Name + ".dll");
+                if (File.Exists(path))
+                    return ctx.LoadFromAssemblyPath(path);
+                return null;
+            };
+        }
 
-    // Avalonia configuration, don't remove; also used by visual designer.
+        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+    }
+
     public static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()

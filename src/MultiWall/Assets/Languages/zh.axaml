@@ -1,0 +1,27 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+    <sys:String x:Key="App.Title">MultiWall - 多显示器壁纸</sys:String>
+
+    <sys:String x:Key="Button.Refresh">刷新</sys:String>
+    <sys:String x:Key="Button.Start">开始</sys:String>
+    <sys:String x:Key="Button.Stop">停止</sys:String>
+    <sys:String x:Key="Button.Back">返回</sys:String>
+    <sys:String x:Key="Button.Browse">浏览</sys:String>
+    <sys:String x:Key="Button.Configure">配置</sys:String>
+    <sys:String x:Key="Button.Clear">清除</sys:String>
+    <sys:String x:Key="Button.SlideshowFolder">选择文件夹</sys:String>
+    <sys:String x:Key="Button.SingleImage">选择图片</sys:String>
+
+    <sys:String x:Key="Label.Position">排列方式:</sys:String>
+    <sys:String x:Key="Label.Interval">间隔:</sys:String>
+    <sys:String x:Key="Label.Seconds">秒</sys:String>
+    <sys:String x:Key="Label.MonitorSettings">显示器设置</sys:String>
+    <sys:String x:Key="Label.NoMonitor">未检测到显示器</sys:String>
+    <sys:String x:Key="Label.SingleImage">单张图片</sys:String>
+    <sys:String x:Key="Label.Slideshow">幻灯片</sys:String>
+    <sys:String x:Key="Label.CurrentWallpaper">当前壁纸:</sys:String>
+    <sys:String x:Key="Label.Resolution">分辨率:</sys:String>
+    <sys:String x:Key="Label.EnableSlideshow">启用幻灯片</sys:String>
+    <sys:String x:Key="Label.Language">语言:</sys:String>
+</ResourceDictionary>

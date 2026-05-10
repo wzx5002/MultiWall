@@ -1,0 +1,87 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MultiWall.ViewModels"
+             xmlns:models="using:MultiWall.Models"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="MultiWall.Views.MonitorListView"
+             x:DataType="vm:MainWindowViewModel">
+
+    <ScrollViewer>
+        <ItemsControl ItemsSource="{Binding Monitors}" Margin="16,12">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="models:MonitorInfo">
+                    <Border BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                            BorderThickness="1" CornerRadius="8"
+                            Margin="0,0,0,10" Padding="14">
+                        <Grid ColumnDefinitions="180,*,Auto"
+                              RowDefinitions="Auto,Auto,Auto,Auto"
+                              ColumnSpacing="14">
+
+                            <!-- Preview thumbnail -->
+                            <Border Grid.Column="0" Grid.RowSpan="4"
+                                    Width="170" Height="106"
+                                    CornerRadius="4"
+                                    ClipToBounds="True"
+                                    Background="{DynamicResource SystemControlBackgroundAltLowBrush}">
+                                <Image Source="{Binding Preview}"
+                                       Stretch="UniformToFill"
+                                       Width="170" Height="106"/>
+                            </Border>
+
+                            <!-- Monitor name -->
+                            <TextBlock Grid.Column="1" Grid.Row="0"
+                                       Text="{Binding DisplayName}"
+                                       FontWeight="Bold" FontSize="16"
+                                       Margin="0,0,0,2"/>
+
+                            <!-- Resolution / Bounds -->
+                            <TextBlock Grid.Column="1" Grid.Row="1"
+                                       Text="{Binding BoundsText}"
+                                       FontSize="12"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                       Margin="0,0,0,4"/>
+
+                            <!-- Current wallpaper path -->
+                            <TextBlock Grid.Column="1" Grid.Row="2"
+                                       Text="{Binding WallpaperPath}"
+                                       TextTrimming="CharacterEllipsis"
+                                       FontSize="11"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                                       Margin="0,0,0,6"/>
+
+                            <!-- Action buttons -->
+                            <StackPanel Grid.Column="1" Grid.Row="3"
+                                        Orientation="Horizontal" Spacing="6">
+                                <Button Content="{DynamicResource Button.Configure}"
+                                        Command="{ReflectionBinding $parent[Window].DataContext.NavigateToSettingsCommand}"
+                                        CommandParameter="{Binding}"
+                                        FontSize="12" Padding="10,5"
+                                        CornerRadius="4"/>
+                            </StackPanel>
+
+                            <!-- Slideshow status -->
+                            <StackPanel Grid.Column="2" Grid.Row="0" Grid.RowSpan="4"
+                                        Width="90"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        Spacing="6">
+                                <Border Background="{DynamicResource SystemAccentColor}"
+                                        CornerRadius="10" Padding="8,3"
+                                        IsVisible="{Binding IsSlideshow}">
+                                    <TextBlock Text="{DynamicResource Label.Slideshow}"
+                                               FontSize="11" Foreground="White"/>
+                                </Border>
+                                <TextBlock Text="{Binding SlideshowImages.Count, StringFormat='{}{0}'}"
+                                           HorizontalAlignment="Center"
+                                           FontSize="11"
+                                           IsVisible="{Binding IsSlideshow}"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </ScrollViewer>
+</UserControl>

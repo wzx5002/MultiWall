@@ -21,19 +21,18 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IWallpaperService _wallpaperService;
     private Timer? _slideshowTimer;
 
-    [ObservableProperty]
-    private ObservableCollection<MonitorInfo> _monitors = [];
+    [ObservableProperty] private ObservableCollection<MonitorInfo> _monitors = [];
+    [ObservableProperty] private MonitorInfo? _selectedMonitor;
+    [ObservableProperty] private DesktopWallpaperPosition _position = DesktopWallpaperPosition.Fill;
+    [ObservableProperty] private int _slideshowInterval = 60;
+    [ObservableProperty] private bool _isSlideshowRunning;
+    [ObservableProperty] private string _currentLanguage = "en";
 
-    [ObservableProperty]
-    private DesktopWallpaperPosition _position = DesktopWallpaperPosition.Fill;
+    public bool IsSettingsOpen => SelectedMonitor != null;
 
-    [ObservableProperty]
-    private int _slideshowInterval = 60;
-
-    [ObservableProperty]
-    private bool _isSlideshowRunning;
-
-    public string ToggleButtonText => IsSlideshowRunning ? "Stop" : "Start";
+    public string ToggleButtonText => IsSlideshowRunning
+        ? LocalizationService.GetString("Button.Stop")
+        : LocalizationService.GetString("Button.Start");
 
     public static DesktopWallpaperPosition[] AvailablePositions { get; } =
         Enum.GetValues<DesktopWallpaperPosition>();
@@ -45,34 +44,61 @@ public partial class MainWindowViewModel : ViewModelBase
         _wallpaperService = wallpaperService;
     }
 
-    partial void OnPositionChanged(DesktopWallpaperPosition value)
-    {
+    partial void OnPositionChanged(DesktopWallpaperPosition value) =>
         _wallpaperService.SetPosition(value);
-    }
 
-    partial void OnIsSlideshowRunningChanged(bool value)
-    {
+    partial void OnIsSlideshowRunningChanged(bool value) =>
         OnPropertyChanged(nameof(ToggleButtonText));
-    }
 
     partial void OnSlideshowIntervalChanged(int value)
     {
         if (value < 1) SlideshowInterval = 1;
-        if (IsSlideshowRunning)
-            RestartSlideshow();
+        if (IsSlideshowRunning) RestartSlideshow();
     }
+
+    partial void OnSelectedMonitorChanged(MonitorInfo? value) =>
+        OnPropertyChanged(nameof(IsSettingsOpen));
+
+    partial void OnCurrentLanguageChanged(string value)
+    {
+        LocalizationService.SetLanguage(value);
+        OnPropertyChanged(nameof(ToggleButtonText));
+        foreach (var m in Monitors)
+            m.RefreshDisplayName();
+    }
+
+    // -- Monitor list --
 
     [RelayCommand]
     private void RefreshMonitors()
     {
         var monitors = _wallpaperService.GetMonitors();
+        foreach (var m in monitors)
+            m.RefreshDisplayName();
         Monitors = new ObservableCollection<MonitorInfo>(monitors);
         Position = _wallpaperService.GetPosition();
     }
 
+    // -- Navigation --
+
     [RelayCommand]
-    private async Task SetWallpaper(string devicePath)
+    private void NavigateToSettings(MonitorInfo? monitor)
     {
+        SelectedMonitor = monitor;
+    }
+
+    [RelayCommand]
+    private void GoBack()
+    {
+        SelectedMonitor = null;
+    }
+
+    // -- Single image --
+
+    [RelayCommand]
+    private async Task BrowseSingleImage()
+    {
+        if (SelectedMonitor == null) return;
         var window = GetMainWindow();
         if (window == null) return;
 
@@ -92,19 +118,17 @@ public partial class MainWindowViewModel : ViewModelBase
         if (files.Count == 0) return;
 
         var path = files[0].Path.LocalPath;
-        _wallpaperService.SetWallpaper(devicePath, path);
-
-        var monitor = Monitors.FirstOrDefault(m => m.DevicePath == devicePath);
-        if (monitor != null)
-        {
-            monitor.WallpaperPath = path;
-            monitor.IsSlideshow = false;
-        }
+        _wallpaperService.SetWallpaper(SelectedMonitor.DevicePath, path);
+        SelectedMonitor.WallpaperPath = path;
+        SelectedMonitor.IsSlideshow = false;
     }
 
+    // -- Slideshow folder --
+
     [RelayCommand]
-    private async Task SetSlideshowFolder(string devicePath)
+    private async Task BrowseSlideshowFolder()
     {
+        if (SelectedMonitor == null) return;
         var window = GetMainWindow();
         if (window == null) return;
 
@@ -127,38 +151,32 @@ public partial class MainWindowViewModel : ViewModelBase
 
         if (images.Count == 0) return;
 
-        var monitor = Monitors.FirstOrDefault(m => m.DevicePath == devicePath);
-        if (monitor != null)
-        {
-            monitor.SlideshowImages = images;
-            monitor.CurrentSlideshowIndex = 0;
-            monitor.IsSlideshow = true;
-            _wallpaperService.SetWallpaper(devicePath, images[0]);
-            monitor.WallpaperPath = images[0];
-        }
+        SelectedMonitor.SlideshowImages = images;
+        SelectedMonitor.CurrentSlideshowIndex = 0;
+        SelectedMonitor.IsSlideshow = true;
+        _wallpaperService.SetWallpaper(SelectedMonitor.DevicePath, images[0]);
+        SelectedMonitor.WallpaperPath = images[0];
     }
+
+    // -- Clear --
 
     [RelayCommand]
-    private void ClearWallpaper(string devicePath)
+    private void ClearCurrentWallpaper()
     {
-        _wallpaperService.ClearWallpaper(devicePath);
-
-        var monitor = Monitors.FirstOrDefault(m => m.DevicePath == devicePath);
-        if (monitor != null)
-        {
-            monitor.WallpaperPath = string.Empty;
-            monitor.IsSlideshow = false;
-            monitor.SlideshowImages = [];
-        }
+        if (SelectedMonitor == null) return;
+        _wallpaperService.ClearWallpaper(SelectedMonitor.DevicePath);
+        SelectedMonitor.WallpaperPath = string.Empty;
+        SelectedMonitor.IsSlideshow = false;
+        SelectedMonitor.SlideshowImages = [];
     }
+
+    // -- Slideshow timer --
 
     [RelayCommand]
     private void ToggleSlideshow()
     {
-        if (IsSlideshowRunning)
-            StopSlideshow();
-        else
-            StartSlideshow();
+        if (IsSlideshowRunning) StopSlideshow();
+        else StartSlideshow();
     }
 
     private void StartSlideshow()
@@ -184,16 +202,14 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private void RestartSlideshow()
     {
-        if (IsSlideshowRunning)
-            StartSlideshow();
+        if (IsSlideshowRunning) StartSlideshow();
     }
 
     private void OnSlideshowTick(object? sender, ElapsedEventArgs e)
     {
         foreach (var monitor in Monitors)
         {
-            if (!monitor.IsSlideshow || monitor.SlideshowImages.Count == 0)
-                continue;
+            if (!monitor.IsSlideshow || monitor.SlideshowImages.Count == 0) continue;
 
             monitor.CurrentSlideshowIndex = (monitor.CurrentSlideshowIndex + 1)
                 % monitor.SlideshowImages.Count;

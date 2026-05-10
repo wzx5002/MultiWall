@@ -1,0 +1,98 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MultiWall.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="MultiWall.Views.MonitorSettingsView"
+             x:DataType="vm:MainWindowViewModel"
+             d:DesignWidth="800" d:DesignHeight="600">
+
+    <ScrollViewer>
+        <StackPanel Spacing="16" Margin="20,16">
+
+            <!-- Header -->
+            <TextBlock Text="{Binding SelectedMonitor.DisplayName}"
+                       FontSize="22" FontWeight="Bold"/>
+
+            <!-- Large Preview -->
+            <Border CornerRadius="8" ClipToBounds="True"
+                    Background="{DynamicResource SystemControlBackgroundAltLowBrush}"
+                    Height="240"
+                    HorizontalAlignment="Left" Width="480">
+                <Image Source="{Binding SelectedMonitor.Preview}"
+                       Stretch="UniformToFill"
+                       Width="480" Height="240"/>
+            </Border>
+
+            <!-- Monitor Info -->
+            <Border Padding="14" CornerRadius="6"
+                    BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                    BorderThickness="1">
+                <StackPanel Spacing="6">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="{DynamicResource Label.Resolution}" FontSize="13" FontWeight="Medium"/>
+                        <TextBlock Text="{Binding SelectedMonitor.BoundsText}" FontSize="13"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="{DynamicResource Label.CurrentWallpaper}" FontSize="13" FontWeight="Medium"/>
+                        <TextBlock Text="{Binding SelectedMonitor.WallpaperPath}"
+                                   FontSize="13" TextTrimming="CharacterEllipsis"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Single Image Section -->
+            <Border Padding="14" CornerRadius="6"
+                    BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                    BorderThickness="1">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="{DynamicResource Label.SingleImage}"
+                               FontSize="15" FontWeight="Bold"/>
+                    <Button Content="{DynamicResource Button.Browse}"
+                            Command="{ReflectionBinding $parent[Window].DataContext.BrowseSingleImageCommand}"
+                            HorizontalAlignment="Left" Padding="14,6"
+                            CornerRadius="4"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Slideshow Section -->
+            <Border Padding="14" CornerRadius="6"
+                    BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                    BorderThickness="1">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="{DynamicResource Label.Slideshow}"
+                               FontSize="15" FontWeight="Bold"/>
+
+                    <Button Content="{DynamicResource Button.SlideshowFolder}"
+                            Command="{ReflectionBinding $parent[Window].DataContext.BrowseSlideshowFolderCommand}"
+                            HorizontalAlignment="Left" Padding="14,6"
+                            CornerRadius="4"/>
+
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="{DynamicResource Label.Interval}" FontSize="13" VerticalAlignment="Center"/>
+                        <TextBox Text="{Binding SlideshowInterval}"
+                                 Width="60" Height="28"
+                                 VerticalContentAlignment="Center"
+                                 HorizontalContentAlignment="Center"/>
+                        <TextBlock Text="{DynamicResource Label.Seconds}" FontSize="13" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <TextBlock Text="{Binding SelectedMonitor.SlideshowImages.Count, StringFormat='{}{0} images loaded'}"
+                               FontSize="13"
+                               IsVisible="{Binding SelectedMonitor.IsSlideshow}"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Clear -->
+            <Button Content="{DynamicResource Button.Clear}"
+                    Command="{ReflectionBinding $parent[Window].DataContext.ClearCurrentWallpaperCommand}"
+                    HorizontalAlignment="Left" Padding="14,6"
+                    CornerRadius="4"
+                    Background="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

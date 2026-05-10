@@ -1,0 +1,27 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+    <sys:String x:Key="App.Title">MultiWall - Multi-Monitor Wallpaper</sys:String>
+
+    <sys:String x:Key="Button.Refresh">Refresh</sys:String>
+    <sys:String x:Key="Button.Start">Start</sys:String>
+    <sys:String x:Key="Button.Stop">Stop</sys:String>
+    <sys:String x:Key="Button.Back">Back</sys:String>
+    <sys:String x:Key="Button.Browse">Browse</sys:String>
+    <sys:String x:Key="Button.Configure">Configure</sys:String>
+    <sys:String x:Key="Button.Clear">Clear</sys:String>
+    <sys:String x:Key="Button.SlideshowFolder">Select Folder</sys:String>
+    <sys:String x:Key="Button.SingleImage">Select Image</sys:String>
+
+    <sys:String x:Key="Label.Position">Position:</sys:String>
+    <sys:String x:Key="Label.Interval">Interval:</sys:String>
+    <sys:String x:Key="Label.Seconds">s</sys:String>
+    <sys:String x:Key="Label.MonitorSettings">Monitor Settings</sys:String>
+    <sys:String x:Key="Label.NoMonitor">No monitors detected</sys:String>
+    <sys:String x:Key="Label.SingleImage">Single Image</sys:String>
+    <sys:String x:Key="Label.Slideshow">Slideshow</sys:String>
+    <sys:String x:Key="Label.CurrentWallpaper">Current Wallpaper:</sys:String>
+    <sys:String x:Key="Label.Resolution">Resolution:</sys:String>
+    <sys:String x:Key="Label.EnableSlideshow">Enable Slideshow</sys:String>
+    <sys:String x:Key="Label.Language">Language:</sys:String>
+</ResourceDictionary>
