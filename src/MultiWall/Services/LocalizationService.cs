@@ -26,20 +26,13 @@ public static class LocalizationService
         CurrentLanguage = language;
 
         if (Application.Current is not { } app)
-        {
-            Program.Log("SetLanguage: Application.Current is null");
             return;
-        }
 
         app.Resources.MergedDictionaries.Clear();
 
         var filePath = Path.Combine(AppContext.BaseDirectory, "resource", "Languages", language + ".axaml");
-        Program.Log($"SetLanguage: loading {filePath}");
         if (!File.Exists(filePath))
-        {
-            Program.Log($"SetLanguage: file not found: {filePath}");
             return;
-        }
 
         try
         {
@@ -59,11 +52,10 @@ public static class LocalizationService
             }
 
             app.Resources.MergedDictionaries.Add(dict);
-            Program.Log($"SetLanguage: loaded {language} with {dict.Count} entries");
+            app.Resources.MergedDictionaries.Add(dict);
         }
-        catch (Exception ex)
+        catch
         {
-            Program.Log($"SetLanguage: Load failed: {ex.Message}");
         }
     }
 }
