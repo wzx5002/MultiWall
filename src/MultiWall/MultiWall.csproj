@@ -24,23 +24,5 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.1" />
   </ItemGroup>
 
-  <!-- Reorganize publish output: move DLLs into lib/ directory -->
-  <Target Name="ReorganizePublishOutput" AfterTargets="Publish" Condition="'$(Configuration)' == 'Release'">
-    <ItemGroup>
-      <_KeepInRoot Include="$(PublishDir)MultiWall.dll" />
-      <_KeepInRoot Include="$(PublishDir)MultiWall.exe" />
-      <_KeepInRoot Include="$(PublishDir)*.json" />
-      <_KeepInRoot Include="$(PublishDir)hostfxr.dll" />
-      <_KeepInRoot Include="$(PublishDir)hostpolicy.dll" />
-      <_KeepInRoot Include="$(PublishDir)coreclr.dll" />
-      <_KeepInRoot Include="$(PublishDir)clrjit.dll" />
-      <_DllsToMove Include="$(PublishDir)*.dll" Exclude="@(_KeepInRoot)" />
-      <_PdbsToMove Include="$(PublishDir)*.pdb" />
-    </ItemGroup>
-    <MakeDir Directories="$(PublishDir)lib" />
-    <Move SourceFiles="@(_DllsToMove)" DestinationFolder="$(PublishDir)lib"
-          Condition="Exists('%(Identity)')" />
-    <Move SourceFiles="@(_PdbsToMove)" DestinationFolder="$(PublishDir)lib"
-          Condition="Exists('%(Identity)')" />
-  </Target>
+
 </Project>

@@ -1,7 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
-using System.Reflection;
-using System.Runtime.Loader;
 using Avalonia;
 
 namespace MultiWall;
@@ -11,19 +10,16 @@ sealed class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        var libPath = Path.Combine(AppContext.BaseDirectory, "lib");
-        if (Directory.Exists(libPath))
+        try
         {
-            AssemblyLoadContext.Default.Resolving += (ctx, name) =>
-            {
-                var path = Path.Combine(libPath, name.Name + ".dll");
-                if (File.Exists(path))
-                    return ctx.LoadFromAssemblyPath(path);
-                return null;
-            };
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
         }
-
-        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        catch (Exception ex)
+        {
+            var logPath = Path.Combine(AppContext.BaseDirectory, "crash.log");
+            File.WriteAllText(logPath, ex.ToString());
+            Environment.Exit(1);
+        }
     }
 
     public static AppBuilder BuildAvaloniaApp()
