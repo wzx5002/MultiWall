@@ -27,33 +27,48 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        Program.Log("OnFrameworkInitializationCompleted started");
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             _desktop = desktop;
+            Program.Log($"BaseDirectory={AppContext.BaseDirectory}");
+
             _config = ConfigService.Load();
+            Program.Log($"Config loaded, Language={_config.Language}");
 
             LocalizationService.SetLanguage(_config.Language);
+            Program.Log("SetLanguage done");
 
             var wallpaperService = new WallpaperService();
+            Program.Log("WallpaperService created");
+
             _vm = new MainWindowViewModel(wallpaperService, _config);
+            Program.Log("MainWindowViewModel created");
 
             desktop.MainWindow = new MainWindow
             {
                 DataContext = _vm,
             };
+            Program.Log("MainWindow assigned");
 
             desktop.MainWindow.Closing += OnMainWindowClosing;
             desktop.Exit += OnExit;
 
             SetupTrayIcon();
+            Program.Log("SetupTrayIcon done");
             ApplyAutoStart();
+            Program.Log("ApplyAutoStart done");
             _vm.RefreshMonitorsCommand.Execute(null);
+            Program.Log("RefreshMonitors done");
             _vm.LoadAndApplyConfig();
+            Program.Log("LoadAndApplyConfig done");
             RebuildTrayMenu();
+            Program.Log("RebuildTrayMenu done");
 
             _vm.Monitors.CollectionChanged += (_, _) => RebuildTrayMenu();
         }
 
+        Program.Log("OnFrameworkInitializationCompleted finished");
         base.OnFrameworkInitializationCompleted();
     }
 
