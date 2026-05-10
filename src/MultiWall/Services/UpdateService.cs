@@ -30,6 +30,12 @@ public static class UpdateService
         }
     }
 
+    private static string StripBuildMeta(string version)
+    {
+        var idx = version.IndexOf('+');
+        return idx >= 0 ? version[..idx] : version;
+    }
+
     public static bool IsSelfContained
     {
         get
@@ -63,7 +69,10 @@ public static class UpdateService
             var latestVersion = tagName.StartsWith('v') ? tagName[1..] : tagName;
             Log($"Latest tag: {tagName}, parsed version: {latestVersion}");
 
-            if (!Version.TryParse(latestVersion, out var latest))
+            var cleanCurrent = StripBuildMeta(current);
+            var cleanLatest = StripBuildMeta(latestVersion);
+
+            if (!Version.TryParse(cleanLatest, out var latest))
             {
                 Log($"Failed to parse latest version: {latestVersion}");
                 return new UpdateResult
@@ -74,7 +83,7 @@ public static class UpdateService
                 };
             }
 
-            if (!Version.TryParse(current, out var currentParsed))
+            if (!Version.TryParse(cleanCurrent, out var currentParsed))
             {
                 Log($"Failed to parse current version: {current}");
                 return new UpdateResult
