@@ -1,18 +1,18 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:MultiWall.ViewModels"
+             xmlns:models="using:MultiWall.Models"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              x:Class="MultiWall.Views.MonitorSettingsView"
-             x:DataType="vm:MainWindowViewModel"
+             x:DataType="models:MonitorInfo"
              d:DesignWidth="800" d:DesignHeight="600">
 
     <ScrollViewer>
         <StackPanel Spacing="16" Margin="20,16">
 
             <!-- Header -->
-            <TextBlock Text="{Binding SelectedMonitor.DisplayName}"
+            <TextBlock Text="{Binding DisplayName}"
                        FontSize="22" FontWeight="Bold"/>
 
             <!-- Large Preview -->
@@ -20,7 +20,7 @@
                     Background="{DynamicResource SystemControlBackgroundAltLowBrush}"
                     Height="240"
                     HorizontalAlignment="Left" Width="480">
-                <Image Source="{Binding SelectedMonitor.Preview}"
+                <Image Source="{Binding Preview}"
                        Stretch="UniformToFill"
                        Width="480" Height="240"/>
             </Border>
@@ -32,11 +32,11 @@
                 <StackPanel Spacing="6">
                     <StackPanel Orientation="Horizontal" Spacing="6">
                         <TextBlock Text="{DynamicResource Label.Resolution}" FontSize="13" FontWeight="Medium"/>
-                        <TextBlock Text="{Binding SelectedMonitor.BoundsText}" FontSize="13"/>
+                        <TextBlock Text="{Binding BoundsText}" FontSize="13"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="6">
                         <TextBlock Text="{DynamicResource Label.CurrentWallpaper}" FontSize="13" FontWeight="Medium"/>
-                        <TextBlock Text="{Binding SelectedMonitor.WallpaperPath}"
+                        <TextBlock Text="{Binding WallpaperPath}"
                                    FontSize="13" TextTrimming="CharacterEllipsis"
                                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
                     </StackPanel>
@@ -72,16 +72,16 @@
 
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBlock Text="{DynamicResource Label.Interval}" FontSize="13" VerticalAlignment="Center"/>
-                        <TextBox Text="{Binding SlideshowInterval}"
+                        <TextBox Text="{ReflectionBinding $parent[Window].DataContext.SlideshowInterval}"
                                  Width="60" Height="28"
                                  VerticalContentAlignment="Center"
                                  HorizontalContentAlignment="Center"/>
                         <TextBlock Text="{DynamicResource Label.Seconds}" FontSize="13" VerticalAlignment="Center"/>
                     </StackPanel>
 
-                    <TextBlock Text="{Binding SelectedMonitor.SlideshowImages.Count, StringFormat='{}{0} images loaded'}"
+                    <TextBlock Text="{Binding SlideshowImages.Count, StringFormat='{}{0} images loaded'}"
                                FontSize="13"
-                               IsVisible="{Binding SelectedMonitor.IsSlideshow}"
+                               IsVisible="{Binding IsSlideshow}"
                                Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
                 </StackPanel>
             </Border>

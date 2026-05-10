@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:MultiWall.ViewModels"
+        xmlns:models="using:MultiWall.Models"
         xmlns:views="using:MultiWall.Views"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -22,7 +23,6 @@
                 BorderThickness="0,0,0,1">
             <StackPanel Orientation="Horizontal" Spacing="8">
 
-                <!-- Back button (settings page only) -->
                 <Button Content="{DynamicResource Button.Back}"
                         Command="{Binding GoBackCommand}"
                         IsVisible="{Binding IsSettingsOpen}"
@@ -75,10 +75,20 @@
             </StackPanel>
         </Border>
 
-        <!-- Content area: toggle between list and settings -->
-        <Panel>
+        <!-- Content area -->
+        <Grid>
+            <!-- Monitor list: always present, hidden when settings open -->
             <views:MonitorListView IsVisible="{Binding !IsSettingsOpen}"/>
-            <views:MonitorSettingsView IsVisible="{Binding IsSettingsOpen}"/>
-        </Panel>
+
+            <!-- Settings: only created when a monitor is selected -->
+            <ContentControl Content="{Binding SelectedMonitor}"
+                           IsVisible="{Binding IsSettingsOpen}">
+                <ContentControl.ContentTemplate>
+                    <DataTemplate x:DataType="models:MonitorInfo">
+                        <views:MonitorSettingsView/>
+                    </DataTemplate>
+                </ContentControl.ContentTemplate>
+            </ContentControl>
+        </Grid>
     </DockPanel>
 </Window>
