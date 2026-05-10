@@ -43,31 +43,72 @@ public static class UpdateService
         }
     }
 
-    public static async Task<UpdateResult?> CheckForUpdatesAsync()
+    private static void Log(string msg)
     {
         try
         {
+            File.AppendAllText(
+                Path.Combine(AppContext.BaseDirectory, "update.log"),
+                $"{DateTime.Now:HH:mm:ss.fff} [Update] {msg}{Environment.NewLine}");
+        }
+        catch { }
+    }
+
+    public static async Task<UpdateResult> CheckForUpdatesAsync()
+    {
+        var current = CurrentVersion;
+        Log($"Check started. Current version: {current}, SelfContained: {IsSelfContained}");
+
+        try
+        {
+            Log($"GET {RepoApiUrl}");
             var json = await _http.GetStringAsync(RepoApiUrl);
+            Log($"Response received: {json.Length} bytes");
+
             using var doc = JsonDocument.Parse(json);
             var root = doc.RootElement;
 
             var tagName = root.GetProperty("tag_name").GetString() ?? "";
             var latestVersion = tagName.StartsWith('v') ? tagName[1..] : tagName;
+            Log($"Latest tag: {tagName}, parsed version: {latestVersion}");
 
-            if (!Version.TryParse(latestVersion, out var latest) ||
-                !Version.TryParse(CurrentVersion, out var current))
-                return null;
+            if (!Version.TryParse(latestVersion, out var latest))
+            {
+                Log($"Failed to parse latest version: {latestVersion}");
+                return new UpdateResult
+                {
+                    UpdateAvailable = false,
+                    CurrentVersion = current,
+                    ErrorMessage = $"Bad version from server: {latestVersion}"
+                };
+            }
 
-            if (latest <= current)
-                return new UpdateResult { UpdateAvailable = false, CurrentVersion = CurrentVersion, LatestVersion = latestVersion };
+            if (!Version.TryParse(current, out var currentParsed))
+            {
+                Log($"Failed to parse current version: {current}");
+                return new UpdateResult
+                {
+                    UpdateAvailable = false,
+                    CurrentVersion = current,
+                    ErrorMessage = $"Bad current version: {current}"
+                };
+            }
+
+            if (latest <= currentParsed)
+            {
+                Log($"Up to date: {current} >= {latestVersion}");
+                return new UpdateResult { UpdateAvailable = false, CurrentVersion = current, LatestVersion = latestVersion };
+            }
 
             var assetPattern = IsSelfContained ? "-sc.zip" : "-fd.zip";
+            Log($"Looking for asset matching: *{assetPattern}");
 
             string? downloadUrl = null;
             long fileSize = 0;
             foreach (var asset in root.GetProperty("assets").EnumerateArray())
             {
                 var name = asset.GetProperty("name").GetString() ?? "";
+                Log($"  Asset: {name}");
                 if (name.EndsWith(assetPattern, StringComparison.OrdinalIgnoreCase))
                 {
                     downloadUrl = asset.GetProperty("browser_download_url").GetString();
@@ -77,46 +118,56 @@ public static class UpdateService
             }
 
             if (downloadUrl == null)
-                return null;
+            {
+                Log($"No matching asset found for pattern: {assetPattern}");
+                return new UpdateResult
+                {
+                    UpdateAvailable = false,
+                    CurrentVersion = current,
+                    ErrorMessage = $"No download for {assetPattern}"
+                };
+            }
 
-            var releaseNotes = root.TryGetProperty("body", out var body) ? body.GetString() ?? "" : "";
+            Log($"Update available: {latestVersion}, download: {downloadUrl}");
 
             return new UpdateResult
             {
                 UpdateAvailable = true,
-                CurrentVersion = CurrentVersion,
+                CurrentVersion = current,
                 LatestVersion = latestVersion,
                 DownloadUrl = downloadUrl,
-                FileSize = fileSize,
-                ReleaseNotes = releaseNotes
+                FileSize = fileSize
             };
         }
         catch (HttpRequestException ex)
         {
             var code = ex.StatusCode.HasValue ? ((int)ex.StatusCode).ToString() : "N/A";
+            Log($"HttpRequestException: HTTP {code} - {ex}");
             return new UpdateResult
             {
                 UpdateAvailable = false,
-                CurrentVersion = CurrentVersion,
-                ErrorMessage = $"Network error (HTTP {code}): {ex.Message}"
+                CurrentVersion = current,
+                ErrorMessage = $"Network error (HTTP {code})"
             };
         }
-        catch (TaskCanceledException)
+        catch (TaskCanceledException ex)
         {
+            Log($"Timeout: {ex.Message}");
             return new UpdateResult
             {
                 UpdateAvailable = false,
-                CurrentVersion = CurrentVersion,
+                CurrentVersion = current,
                 ErrorMessage = "Request timed out (check network)"
             };
         }
         catch (Exception ex)
         {
+            Log($"Exception: {ex.GetType().Name} - {ex.Message}\n{ex}");
             return new UpdateResult
             {
                 UpdateAvailable = false,
-                CurrentVersion = CurrentVersion,
-                ErrorMessage = $"Error: {ex.GetType().Name} - {ex.Message}"
+                CurrentVersion = current,
+                ErrorMessage = $"{ex.GetType().Name}"
             };
         }
     }
