@@ -76,7 +76,8 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private void GoBack()
     {
-        SelectedMonitor?.ReleaseAllPreviews();
+        SaveConfig();
+        try { SelectedMonitor?.ReleaseAllPreviews(); } catch { }
         SelectedMonitor = null;
     }
 
@@ -109,6 +110,7 @@ public partial class MainWindowViewModel : ViewModelBase
         SelectedMonitor.WallpaperPath = path;
         SelectedMonitor.Mode = WallpaperMode.SingleImage;
         EnsureSlideshowTimer();
+        SaveConfig();
     }
 
     // -- Slideshow folder --
@@ -146,6 +148,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _wallpaperService.SetWallpaper(SelectedMonitor.DevicePath, images[0]);
         SelectedMonitor.WallpaperPath = images[0];
         EnsureSlideshowTimer();
+        SaveConfig();
     }
 
     // -- Clear --
@@ -159,6 +162,7 @@ public partial class MainWindowViewModel : ViewModelBase
         SelectedMonitor.Mode = WallpaperMode.SingleImage;
         SelectedMonitor.SlideshowImages = [];
         EnsureSlideshowTimer();
+        SaveConfig();
     }
 
     // -- Per-monitor slideshow toggle --
@@ -169,12 +173,16 @@ public partial class MainWindowViewModel : ViewModelBase
         if (SelectedMonitor == null) return;
         SelectedMonitor.IsSlideshowRunning = !SelectedMonitor.IsSlideshowRunning;
         EnsureSlideshowTimer();
+        SaveConfig();
     }
 
     private void OnMonitorPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(MonitorInfo.Position) && sender == SelectedMonitor)
+        {
             _wallpaperService.SetPosition(SelectedMonitor!.Position);
+            SaveConfig();
+        }
     }
 
     // -- Slideshow timer --

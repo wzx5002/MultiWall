@@ -48,6 +48,9 @@ public partial class App : Application
             ApplyAutoStart();
             _vm.RefreshMonitorsCommand.Execute(null);
             _vm.LoadAndApplyConfig();
+            RebuildTrayMenu();
+
+            _vm.Monitors.CollectionChanged += (_, _) => RebuildTrayMenu();
         }
 
         base.OnFrameworkInitializationCompleted();
@@ -60,21 +63,63 @@ public partial class App : Application
             _trayIcon = new TrayIcon
             {
                 Icon = new WindowIcon("avares://MultiWall/Assets/avalonia-logo.ico"),
-                ToolTipText = "MultiWall",
-                Menu = new NativeMenu()
+                ToolTipText = "MultiWall"
             };
-
-            var showItem = new NativeMenuItem(LocalizationService.GetString("Tray.Show"));
-            showItem.Click += (_, _) => ShowMainWindow();
-            _trayIcon.Menu.Add(showItem);
-
-            var exitItem = new NativeMenuItem(LocalizationService.GetString("Tray.Exit"));
-            exitItem.Click += (_, _) => ForceExit();
-            _trayIcon.Menu.Add(exitItem);
-
             _trayIcon.Clicked += (_, _) => ShowMainWindow();
+            _trayIcon.Menu = new NativeMenu();
         }
         catch { }
+    }
+
+    private void RebuildTrayMenu()
+    {
+        if (_trayIcon == null) return;
+
+        var menu = new NativeMenu();
+
+        var showItem = new NativeMenuItem(LocalizationService.GetString("Tray.Show"));
+        showItem.Click += (_, _) => ShowMainWindow();
+        menu.Add(showItem);
+
+        menu.Add(new NativeMenuItemSeparator());
+
+        if (_vm != null)
+        {
+            foreach (var monitor in _vm.Monitors)
+            {
+                var monitorItem = new NativeMenuItem(monitor.DisplayName);
+                var captured = monitor;
+                monitorItem.Click += (_, _) => ShowAndNavigateTo(captured);
+                menu.Add(monitorItem);
+            }
+        }
+
+        menu.Add(new NativeMenuItemSeparator());
+
+        var settingsItem = new NativeMenuItem(LocalizationService.GetString("Label.Settings"));
+        settingsItem.Click += (_, _) =>
+        {
+            ShowMainWindow();
+            Dispatcher.UIThread.Post(() => _vm?.OpenSettingsCommand.Execute(null));
+        };
+        menu.Add(settingsItem);
+
+        menu.Add(new NativeMenuItemSeparator());
+
+        var exitItem = new NativeMenuItem(LocalizationService.GetString("Tray.Exit"));
+        exitItem.Click += (_, _) => ForceExit();
+        menu.Add(exitItem);
+
+        _trayIcon.Menu = menu;
+    }
+
+    private void ShowAndNavigateTo(MonitorInfo monitor)
+    {
+        ShowMainWindow();
+        Dispatcher.UIThread.Post(() =>
+        {
+            _vm?.NavigateToSettingsCommand.Execute(monitor);
+        });
     }
 
     private void ShowMainWindow()
@@ -100,7 +145,7 @@ public partial class App : Application
     private void ForceExit()
     {
         _vm?.SaveConfig();
-        _desktop?.MainWindow?.Close();
+        _trayIcon?.Dispose();
         _desktop?.Shutdown();
     }
 
@@ -141,4 +186,7 @@ public partial class App : Application
         };
         win.ShowDialog(desktop.MainWindow!);
     }
+
+    public static void RebuildTray() =>
+        (Application.Current as App)?.RebuildTrayMenu();
 }
