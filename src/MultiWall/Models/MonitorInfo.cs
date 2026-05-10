@@ -134,7 +134,7 @@ public partial class MonitorInfo : ObservableObject, IDisposable
     partial void OnIndexChanged(int value) => OnPropertyChanged(nameof(DisplayName));
     partial void OnWallpaperPathChanged(string value)
     {
-        ReleaseCachedThumbnail();
+        _cachedThumbnailPath = null;
         OnPropertyChanged(nameof(Preview));
         OnPropertyChanged(nameof(Thumbnail));
     }

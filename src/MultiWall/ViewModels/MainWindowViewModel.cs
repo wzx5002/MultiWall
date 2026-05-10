@@ -77,7 +77,9 @@ public partial class MainWindowViewModel : ViewModelBase
     private void GoBack()
     {
         SaveConfig();
-        try { SelectedMonitor?.ReleaseAllPreviews(); } catch { }
+        // Don't dispose previews here — the Image controls may still reference them.
+        // Invalidation via OnWallpaperPathChanged already marks caches stale; actual
+        // disposal happens inside the getter when creating a replacement.
         SelectedMonitor = null;
     }
 
