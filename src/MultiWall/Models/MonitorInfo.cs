@@ -26,6 +26,7 @@ public partial class MonitorInfo : ObservableObject, IDisposable
     [ObservableProperty] private int _currentSlideshowIndex;
     [ObservableProperty] private int _slideshowInterval = 60;
     [ObservableProperty] private bool _isSlideshowRunning = true;
+    [ObservableProperty] private bool _slideshowShuffle;
     [ObservableProperty] private DesktopWallpaperPosition _position = DesktopWallpaperPosition.Fill;
 
     private Bitmap? _cachedPreview;

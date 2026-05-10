@@ -20,6 +20,7 @@ public partial class MainWindowViewModel : ViewModelBase
 {
     private readonly IWallpaperService _wallpaperService;
     private readonly AppConfig _config;
+    private readonly Random _random = new();
     private Timer? _slideshowTimer;
     private MonitorInfo? _prevSelected;
 
@@ -237,8 +238,11 @@ public partial class MainWindowViewModel : ViewModelBase
                 continue;
 
             monitor.LastAdvanceTime = now;
-            monitor.CurrentSlideshowIndex = (monitor.CurrentSlideshowIndex + 1)
-                % monitor.SlideshowImages.Count;
+            if (monitor.SlideshowShuffle && monitor.SlideshowImages.Count > 1)
+                monitor.CurrentSlideshowIndex = _random.Next(monitor.SlideshowImages.Count);
+            else
+                monitor.CurrentSlideshowIndex = (monitor.CurrentSlideshowIndex + 1)
+                    % monitor.SlideshowImages.Count;
 
             var imagePath = monitor.SlideshowImages[monitor.CurrentSlideshowIndex];
             _wallpaperService.SetWallpaper(monitor.DevicePath, imagePath);
@@ -278,6 +282,7 @@ public partial class MainWindowViewModel : ViewModelBase
             SlideshowImages = m.SlideshowImages,
             SlideshowInterval = m.SlideshowInterval,
             IsSlideshowRunning = m.IsSlideshowRunning,
+            SlideshowShuffle = m.SlideshowShuffle,
             Position = m.Position
         }).ToList();
         ConfigService.Save(_config);
@@ -295,6 +300,7 @@ public partial class MainWindowViewModel : ViewModelBase
             monitor.SlideshowImages = mc.SlideshowImages;
             monitor.SlideshowInterval = mc.SlideshowInterval;
             monitor.IsSlideshowRunning = mc.IsSlideshowRunning;
+            monitor.SlideshowShuffle = mc.SlideshowShuffle;
             monitor.CurrentSlideshowIndex = 0;
             monitor.LastAdvanceTime = DateTime.UtcNow;
             monitor.Position = mc.Position;

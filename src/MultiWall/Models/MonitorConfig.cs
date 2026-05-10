@@ -15,6 +15,7 @@ public class MonitorConfig
     public List<string> SlideshowImages { get; set; } = [];
     public int SlideshowInterval { get; set; } = 60;
     public bool IsSlideshowRunning { get; set; } = true;
+    public bool SlideshowShuffle { get; set; }
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public DesktopWallpaperPosition Position { get; set; } = DesktopWallpaperPosition.Fill;

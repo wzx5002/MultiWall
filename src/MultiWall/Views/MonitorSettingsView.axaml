@@ -95,6 +95,10 @@
                         <TextBlock Text="{DynamicResource Label.Seconds}" FontSize="13" VerticalAlignment="Center"/>
                     </StackPanel>
 
+                    <CheckBox IsChecked="{Binding SlideshowShuffle}">
+                        <TextBlock Text="{DynamicResource Label.Shuffle}"/>
+                    </CheckBox>
+
                     <Button Content="{Binding SlideshowToggleText}"
                             Command="{ReflectionBinding $parent[Window].DataContext.ToggleMonitorSlideshowCommand}"
                             HorizontalAlignment="Left" Padding="14,6" CornerRadius="4"/>
