@@ -43,16 +43,7 @@ public static class UpdateService
         }
     }
 
-    private static void Log(string msg)
-    {
-        try
-        {
-            File.AppendAllText(
-                Path.Combine(AppContext.BaseDirectory, "update.log"),
-                $"{DateTime.Now:HH:mm:ss.fff} [Update] {msg}{Environment.NewLine}");
-        }
-        catch { }
-    }
+    private static void Log(string msg) => Logger.Info("Update", msg);
 
     public static async Task<UpdateResult> CheckForUpdatesAsync()
     {
@@ -142,7 +133,7 @@ public static class UpdateService
         catch (HttpRequestException ex)
         {
             var code = ex.StatusCode.HasValue ? ((int)ex.StatusCode).ToString() : "N/A";
-            Log($"HttpRequestException: HTTP {code} - {ex}");
+            Logger.Error("Update", $"HttpRequestException: HTTP {code} - {ex.Message}");
             return new UpdateResult
             {
                 UpdateAvailable = false,
@@ -152,7 +143,7 @@ public static class UpdateService
         }
         catch (TaskCanceledException ex)
         {
-            Log($"Timeout: {ex.Message}");
+            Logger.Error("Update", $"Timeout: {ex.Message}");
             return new UpdateResult
             {
                 UpdateAvailable = false,
@@ -162,7 +153,7 @@ public static class UpdateService
         }
         catch (Exception ex)
         {
-            Log($"Exception: {ex.GetType().Name} - {ex.Message}\n{ex}");
+            Logger.Error("Update", $"Exception: {ex.GetType().Name} - {ex.Message}");
             return new UpdateResult
             {
                 UpdateAvailable = false,

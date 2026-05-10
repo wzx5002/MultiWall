@@ -30,7 +30,10 @@ public partial class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             _desktop = desktop;
+            Logger.Info("App", $"BaseDirectory={AppContext.BaseDirectory}");
+
             _config = ConfigService.Load();
+            Logger.Info("App", $"Config loaded, Language={_config.Language}");
 
             LocalizationService.SetLanguage(_config.Language);
 
@@ -46,6 +49,7 @@ public partial class App : Application
             desktop.Exit += OnExit;
 
             SetupTrayIcon();
+            Logger.Info("App", "TrayIcon set up");
             ApplyAutoStart();
             _vm.RefreshMonitorsCommand.Execute(null);
             _vm.LoadAndApplyConfig();
@@ -73,8 +77,7 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
-            var logPath = Path.Combine(AppContext.BaseDirectory, "error.log");
-            File.WriteAllText(logPath, $"TrayIcon setup failed: {ex}");
+            Logger.Error("App", $"TrayIcon setup failed: {ex.Message}");
         }
     }
 

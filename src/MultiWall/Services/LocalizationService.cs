@@ -31,8 +31,12 @@ public static class LocalizationService
         app.Resources.MergedDictionaries.Clear();
 
         var filePath = Path.Combine(AppContext.BaseDirectory, "resource", "Languages", language + ".axaml");
+        Logger.Info("Loc", $"Loading {filePath}");
         if (!File.Exists(filePath))
+        {
+            Logger.Error("Loc", $"File not found: {filePath}");
             return;
+        }
 
         try
         {
@@ -52,10 +56,11 @@ public static class LocalizationService
             }
 
             app.Resources.MergedDictionaries.Add(dict);
-            app.Resources.MergedDictionaries.Add(dict);
+            Logger.Info("Loc", $"Loaded {language} with {dict.Count} entries");
         }
-        catch
+        catch (Exception ex)
         {
+            Logger.Error("Loc", ex);
         }
     }
 }

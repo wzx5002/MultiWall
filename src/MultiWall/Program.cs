@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
-using System.IO;
+using System.Linq;
 using Avalonia;
+using MultiWall.Services;
 
 namespace MultiWall;
 
@@ -10,14 +10,18 @@ sealed class Program
     [STAThread]
     public static void Main(string[] args)
     {
+        var debug = args.Any(a => a.Equals("--debug", StringComparison.OrdinalIgnoreCase)
+                               || a.Equals("-d", StringComparison.OrdinalIgnoreCase));
+        Logger.Init(debug);
+
         try
         {
+            Logger.Info("Program", "Starting");
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
         }
         catch (Exception ex)
         {
-            var logPath = Path.Combine(AppContext.BaseDirectory, "crash.log");
-            File.WriteAllText(logPath, ex.ToString());
+            Logger.Error("Program", ex);
             Environment.Exit(1);
         }
     }
