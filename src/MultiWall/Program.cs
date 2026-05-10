@@ -16,8 +16,6 @@ sealed class Program
         _logPath = Path.Combine(AppContext.BaseDirectory, "debug.log");
         Log("Program.Main started");
 
-        AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
-
         try
         {
             Log("Building Avalonia app...");
@@ -71,5 +69,24 @@ sealed class Program
             File.AppendAllText(_logPath ?? "debug.log", $"{DateTime.Now:HH:mm:ss.fff} [Program] {msg}{Environment.NewLine}");
         }
         catch { }
+    }
+}
+
+internal static class ModuleInitializer
+{
+    [System.Runtime.CompilerServices.ModuleInitializer]
+    internal static void Initialize()
+    {
+        AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
+        {
+            var name = new AssemblyName(args.Name).Name;
+            var path = Path.Combine(AppContext.BaseDirectory, "Lib", name + ".dll");
+            if (File.Exists(path))
+            {
+                try { return Assembly.LoadFrom(path); }
+                catch { }
+            }
+            return null;
+        };
     }
 }

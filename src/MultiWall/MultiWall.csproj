@@ -44,7 +44,6 @@
     </ItemGroup>
     <Move SourceFiles="@(_DllsToMove)" DestinationFolder="$(PublishDir)Lib" />
     <Move SourceFiles="@(_PdbsToMove)" DestinationFolder="$(PublishDir)Lib" />
-    <Exec Command="python &quot;$(MSBuildProjectDirectory)/../../scripts/fix_deps.py&quot; &quot;$(PublishDir)MultiWall.deps.json&quot;" />
   </Target>
 
 </Project>
