@@ -31,14 +31,9 @@
                 <Separator Width="1" Height="18"
                            Background="{DynamicResource SystemControlForegroundBaseLowBrush}"
                            VerticalAlignment="Center"/>
-                <TextBlock Text="{DynamicResource Label.Language}" VerticalAlignment="Center" FontSize="13"/>
-                <ComboBox SelectedItem="{Binding CurrentLanguage}"
-                          Width="70" Height="30" VerticalAlignment="Center">
-                    <ComboBox.Items>
-                        <x:String>en</x:String>
-                        <x:String>zh</x:String>
-                    </ComboBox.Items>
-                </ComboBox>
+                <Button Content="{DynamicResource Button.Settings}"
+                        Command="{Binding OpenSettingsCommand}"
+                        Width="70" Height="30"/>
             </StackPanel>
         </Border>
 

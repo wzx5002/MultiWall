@@ -37,6 +37,12 @@ public static class LocalizationService
             ["Label.ImagesLoaded"] = "{0} images loaded",
             ["Label.ModeSingle"] = "Single Image",
             ["Label.ModeSlideshow"] = "Slideshow",
+            ["Label.Settings"] = "Settings",
+            ["Label.AutoStart"] = "Start with Windows",
+            ["Label.MinimizeToTray"] = "Minimize to system tray",
+            ["Button.Settings"] = "Settings",
+            ["Tray.Show"] = "Show",
+            ["Tray.Exit"] = "Exit",
         },
         ["zh"] = new()
         {
@@ -66,6 +72,12 @@ public static class LocalizationService
             ["Label.ImagesLoaded"] = "已加载 {0} 张图片",
             ["Label.ModeSingle"] = "单张图片",
             ["Label.ModeSlideshow"] = "幻灯片",
+            ["Label.Settings"] = "设置",
+            ["Label.AutoStart"] = "开机自启",
+            ["Label.MinimizeToTray"] = "最小化到系统托盘",
+            ["Button.Settings"] = "设置",
+            ["Tray.Show"] = "显示",
+            ["Tray.Exit"] = "退出",
         }
     };
 

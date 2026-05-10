@@ -1,0 +1,35 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="using:MultiWall.Models"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="MultiWall.Views.SettingsView"
+             x:DataType="models:AppConfig"
+             d:DesignWidth="340" d:DesignHeight="240">
+
+    <Border Padding="20">
+        <StackPanel Spacing="14">
+            <TextBlock Text="{DynamicResource Label.Settings}" FontSize="18" FontWeight="Bold"/>
+
+            <CheckBox IsChecked="{Binding AutoStart}">
+                <TextBlock Text="{DynamicResource Label.AutoStart}"/>
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding MinimizeToTray}">
+                <TextBlock Text="{DynamicResource Label.MinimizeToTray}"/>
+            </CheckBox>
+
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="{DynamicResource Label.Language}" FontSize="13" VerticalAlignment="Center"/>
+                <ComboBox SelectedItem="{Binding Language}" Width="70" Height="28"
+                          VerticalAlignment="Center">
+                    <ComboBox.Items>
+                        <x:String>en</x:String>
+                        <x:String>zh</x:String>
+                    </ComboBox.Items>
+                </ComboBox>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>

@@ -7,6 +7,12 @@ using static MultiWall.Models.WallpaperMode;
 
 namespace MultiWall.Tests;
 
+file class TestFactory
+{
+    public static MainWindowViewModel Create(IWallpaperService? wallpaper = null)
+        => new(wallpaper ?? Substitute.For<IWallpaperService>(), new AppConfig());
+}
+
 public class MainWindowViewModelTests
 {
     [Fact]
@@ -22,7 +28,7 @@ public class MainWindowViewModelTests
             }
         ]);
 
-        var vm = new MainWindowViewModel(wallpaper);
+        var vm = TestFactory.Create(wallpaper);
         vm.RefreshMonitorsCommand.Execute(null);
 
         Assert.Single(vm.Monitors);
@@ -34,7 +40,7 @@ public class MainWindowViewModelTests
     [Fact]
     public void NavigateToSettings_SetsSelectedMonitor()
     {
-        var vm = new MainWindowViewModel(Substitute.For<IWallpaperService>());
+        var vm = TestFactory.Create();
         var monitor = new MonitorInfo { Index = 0, DevicePath = "MONITOR1" };
 
         Assert.False(vm.IsSettingsOpen);
@@ -46,7 +52,7 @@ public class MainWindowViewModelTests
     [Fact]
     public void GoBack_ClearsSelectedMonitor()
     {
-        var vm = new MainWindowViewModel(Substitute.For<IWallpaperService>());
+        var vm = TestFactory.Create();
         vm.NavigateToSettingsCommand.Execute(new MonitorInfo { Index = 0, DevicePath = "M1" });
         Assert.True(vm.IsSettingsOpen);
         vm.GoBackCommand.Execute(null);
@@ -58,7 +64,7 @@ public class MainWindowViewModelTests
     public void ClearCurrentWallpaper_ClearsSelectedMonitor()
     {
         var wallpaper = Substitute.For<IWallpaperService>();
-        var vm = new MainWindowViewModel(wallpaper);
+        var vm = TestFactory.Create(wallpaper);
         var monitor = new MonitorInfo
         {
             Index = 0, DevicePath = "MONITOR1",
@@ -79,7 +85,7 @@ public class MainWindowViewModelTests
     [Fact]
     public void ToggleMonitorSlideshow_FlipsIsSlideshowRunning()
     {
-        var vm = new MainWindowViewModel(Substitute.For<IWallpaperService>());
+        var vm = TestFactory.Create();
         var monitor = new MonitorInfo { Index = 0, DevicePath = "M1", IsSlideshowRunning = true };
 
         vm.NavigateToSettingsCommand.Execute(monitor);
@@ -93,7 +99,7 @@ public class MainWindowViewModelTests
     public void PositionChanged_CallsService()
     {
         var wallpaper = Substitute.For<IWallpaperService>();
-        var vm = new MainWindowViewModel(wallpaper);
+        var vm = TestFactory.Create(wallpaper);
         var monitor = new MonitorInfo { Index = 0, DevicePath = "M1", Position = DesktopWallpaperPosition.Fill };
 
         vm.NavigateToSettingsCommand.Execute(monitor);
@@ -109,7 +115,7 @@ public class MainWindowViewModelTests
         var wallpaper = Substitute.For<IWallpaperService>();
         wallpaper.GetMonitors().Returns([new MonitorInfo { Index = 0, DevicePath = "M1" }]);
 
-        var vm = new MainWindowViewModel(wallpaper);
+        var vm = TestFactory.Create(wallpaper);
         vm.RefreshMonitorsCommand.Execute(null);
 
         Assert.Equal("Monitor 1", vm.Monitors[0].DisplayName);

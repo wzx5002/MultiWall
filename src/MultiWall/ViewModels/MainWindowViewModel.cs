@@ -19,6 +19,7 @@ namespace MultiWall.ViewModels;
 public partial class MainWindowViewModel : ViewModelBase
 {
     private readonly IWallpaperService _wallpaperService;
+    private readonly AppConfig _config;
     private Timer? _slideshowTimer;
     private MonitorInfo? _prevSelected;
 
@@ -28,11 +29,13 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public bool IsSettingsOpen => SelectedMonitor != null;
 
-    public MainWindowViewModel() : this(new WallpaperService()) { }
+    public MainWindowViewModel() : this(new WallpaperService(), new AppConfig()) { }
 
-    public MainWindowViewModel(IWallpaperService wallpaperService)
+    public MainWindowViewModel(IWallpaperService wallpaperService, AppConfig config)
     {
         _wallpaperService = wallpaperService;
+        _config = config;
+        CurrentLanguage = config.Language;
     }
 
     partial void OnSelectedMonitorChanged(MonitorInfo? value)
@@ -49,13 +52,6 @@ public partial class MainWindowViewModel : ViewModelBase
             ReleaseOtherPreviews(value);
             value.PropertyChanged += OnMonitorPropertyChanged;
         }
-    }
-
-    partial void OnCurrentLanguageChanged(string value)
-    {
-        LocalizationService.SetLanguage(value);
-        foreach (var m in Monitors)
-            m.RefreshDisplayName();
     }
 
     // -- Monitor list --
@@ -253,6 +249,67 @@ public partial class MainWindowViewModel : ViewModelBase
             if (m != active)
                 m.ReleaseAllPreviews();
         }
+    }
+
+    [RelayCommand]
+    private void OpenSettings()
+    {
+        App.ShowSettings(_config);
+    }
+
+    public void SaveConfig()
+    {
+        _config.Language = CurrentLanguage;
+        _config.Monitors = Monitors.Select(m => new MonitorConfig
+        {
+            DevicePath = m.DevicePath,
+            Mode = m.Mode,
+            WallpaperPath = m.WallpaperPath,
+            SlideshowImages = m.SlideshowImages,
+            SlideshowInterval = m.SlideshowInterval,
+            IsSlideshowRunning = m.IsSlideshowRunning,
+            Position = m.Position
+        }).ToList();
+        ConfigService.Save(_config);
+    }
+
+    public void LoadAndApplyConfig()
+    {
+        var monitors = Monitors.ToList();
+        foreach (var mc in _config.Monitors)
+        {
+            var monitor = monitors.FirstOrDefault(m => m.DevicePath == mc.DevicePath);
+            if (monitor == null) continue;
+
+            monitor.Mode = mc.Mode;
+            monitor.SlideshowImages = mc.SlideshowImages;
+            monitor.SlideshowInterval = mc.SlideshowInterval;
+            monitor.IsSlideshowRunning = mc.IsSlideshowRunning;
+            monitor.CurrentSlideshowIndex = 0;
+            monitor.LastAdvanceTime = DateTime.UtcNow;
+            monitor.Position = mc.Position;
+
+            if (!string.IsNullOrEmpty(mc.WallpaperPath) && File.Exists(mc.WallpaperPath))
+            {
+                monitor.WallpaperPath = mc.WallpaperPath;
+                try { _wallpaperService.SetWallpaper(mc.DevicePath, mc.WallpaperPath); } catch { }
+            }
+        }
+        EnsureSlideshowTimer();
+    }
+
+    public void OnSettingsApplied()
+    {
+        LocalizationService.SetLanguage(_config.Language);
+        CurrentLanguage = _config.Language;
+        foreach (var m in Monitors) m.RefreshDisplayName();
+    }
+
+    partial void OnCurrentLanguageChanged(string value)
+    {
+        _config.Language = value;
+        LocalizationService.SetLanguage(value);
+        foreach (var m in Monitors) m.RefreshDisplayName();
     }
 
     private static Window? GetMainWindow()
