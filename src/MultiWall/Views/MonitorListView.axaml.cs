@@ -13,8 +13,10 @@ public partial class MonitorListView : UserControl
         InitializeComponent();
     }
 
-    private void OnContextRequested(object? sender, ContextRequestedEventArgs e)
+    private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
+        var point = e.GetCurrentPoint(this);
+        if (!point.Properties.IsRightButtonPressed) return;
         if (sender is not Control control) return;
         if (control.DataContext is not MonitorInfo monitor || !monitor.IsSlideshow) return;
 
