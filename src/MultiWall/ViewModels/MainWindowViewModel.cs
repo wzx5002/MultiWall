@@ -148,6 +148,8 @@ public partial class MainWindowViewModel : ViewModelBase
         SelectedMonitor.CurrentSlideshowIndex = 0;
         SelectedMonitor.LastAdvanceTime = DateTime.MinValue;
         SelectedMonitor.Mode = WallpaperMode.Slideshow;
+        if (SelectedMonitor.SlideshowShuffle)
+            SelectedMonitor.RebuildShuffleOrder(_random);
         _wallpaperService.SetWallpaper(SelectedMonitor.DevicePath, images[0]);
         SelectedMonitor.WallpaperPath = images[0];
         EnsureSlideshowTimer();
@@ -239,10 +241,17 @@ public partial class MainWindowViewModel : ViewModelBase
 
             monitor.LastAdvanceTime = now;
             if (monitor.SlideshowShuffle && monitor.SlideshowImages.Count > 1)
-                monitor.CurrentSlideshowIndex = _random.Next(monitor.SlideshowImages.Count);
+            {
+                if (monitor.ShuffledOrder.Count == 0 || monitor.ShuffledPosition >= monitor.ShuffledOrder.Count)
+                    monitor.RebuildShuffleOrder(_random);
+                monitor.CurrentSlideshowIndex = monitor.ShuffledOrder[monitor.ShuffledPosition];
+                monitor.ShuffledPosition++;
+            }
             else
+            {
                 monitor.CurrentSlideshowIndex = (monitor.CurrentSlideshowIndex + 1)
                     % monitor.SlideshowImages.Count;
+            }
 
             var imagePath = monitor.SlideshowImages[monitor.CurrentSlideshowIndex];
             _wallpaperService.SetWallpaper(monitor.DevicePath, imagePath);
@@ -301,6 +310,8 @@ public partial class MainWindowViewModel : ViewModelBase
             monitor.SlideshowInterval = mc.SlideshowInterval;
             monitor.IsSlideshowRunning = mc.IsSlideshowRunning;
             monitor.SlideshowShuffle = mc.SlideshowShuffle;
+            if (monitor.SlideshowShuffle && monitor.SlideshowImages.Count > 1)
+                monitor.RebuildShuffleOrder(_random);
             monitor.CurrentSlideshowIndex = 0;
             monitor.LastAdvanceTime = DateTime.UtcNow;
             monitor.Position = mc.Position;

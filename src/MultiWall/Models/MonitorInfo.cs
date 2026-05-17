@@ -34,6 +34,8 @@ public partial class MonitorInfo : ObservableObject, IDisposable
     private IImage? _cachedThumbnail;
     private string? _cachedThumbnailPath;
     internal DateTime LastAdvanceTime = DateTime.MinValue;
+    internal List<int> ShuffledOrder = [];
+    internal int ShuffledPosition;
 
     public string DisplayName => LocalizationService.CurrentLanguage == "zh"
         ? $"显示器 {Index + 1}"
@@ -126,6 +128,11 @@ public partial class MonitorInfo : ObservableObject, IDisposable
     partial void OnIsSlideshowRunningChanged(bool value) =>
         OnPropertyChanged(nameof(SlideshowToggleText));
 
+    partial void OnSlideshowShuffleChanged(bool value)
+    {
+        if (value) ShuffledOrder = [];
+    }
+
     partial void OnIndexChanged(int value) => OnPropertyChanged(nameof(DisplayName));
     partial void OnWallpaperPathChanged(string value)
     {
@@ -152,5 +159,39 @@ public partial class MonitorInfo : ObservableObject, IDisposable
         _cachedThumbnail = null;
         _cachedPreviewPath = null;
         _cachedThumbnailPath = null;
+    }
+
+    internal void RebuildShuffleOrder(Random rng)
+    {
+        var count = SlideshowImages.Count;
+        if (count <= 1)
+        {
+            ShuffledOrder = [];
+            ShuffledPosition = 0;
+            return;
+        }
+
+        var order = new List<int>(count);
+        for (var i = 0; i < count; i++) order.Add(i);
+
+        for (var i = count - 1; i > 0; i--)
+        {
+            var j = rng.Next(i + 1);
+            (order[i], order[j]) = (order[j], order[i]);
+        }
+
+        if (ShuffledOrder.Count > 0 && order[0] == ShuffledOrder[^1] && count > 1)
+        {
+            var swap = rng.Next(1, count);
+            (order[0], order[swap]) = (order[swap], order[0]);
+        }
+        else if (ShuffledOrder.Count == 0 && order[0] == CurrentSlideshowIndex && count > 1)
+        {
+            var swap = rng.Next(1, count);
+            (order[0], order[swap]) = (order[swap], order[0]);
+        }
+
+        ShuffledOrder = order;
+        ShuffledPosition = 0;
     }
 }
