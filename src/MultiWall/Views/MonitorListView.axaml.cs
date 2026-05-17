@@ -16,9 +16,35 @@ public partial class MonitorListView : UserControl
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         var point = e.GetCurrentPoint(this);
-        if (!point.Properties.IsRightButtonPressed) return;
-        if (sender is not Control control) return;
-        if (control.DataContext is not MonitorInfo monitor || !monitor.IsSlideshow) return;
+        Logger.Info("ContextMenu", $"PointerPressed: RightButton={point.Properties.IsRightButtonPressed}, sender={sender?.GetType().Name}");
+
+        if (!point.Properties.IsRightButtonPressed)
+        {
+            Logger.Info("ContextMenu", "Skipped: not right button");
+            return;
+        }
+
+        if (sender is not Control control)
+        {
+            Logger.Info("ContextMenu", $"Skipped: sender {sender?.GetType().Name} is not Control");
+            return;
+        }
+
+        Logger.Info("ContextMenu", $"DataContext type: {control.DataContext?.GetType().Name}");
+
+        if (control.DataContext is not MonitorInfo monitor)
+        {
+            Logger.Info("ContextMenu", $"Skipped: DataContext is {control.DataContext?.GetType().Name ?? "null"}, not MonitorInfo");
+            return;
+        }
+
+        if (!monitor.IsSlideshow)
+        {
+            Logger.Info("ContextMenu", $"Skipped: monitor {monitor.DisplayName} not in slideshow mode");
+            return;
+        }
+
+        Logger.Info("ContextMenu", $"Opening context menu for {monitor.DisplayName}");
 
         var menu = new ContextMenu();
         var item = new MenuItem
@@ -27,6 +53,7 @@ public partial class MonitorListView : UserControl
         };
         item.Click += (_, _) =>
         {
+            Logger.Info("ContextMenu", $"NextWallpaper clicked for {monitor.DisplayName}");
             if (VisualRoot is Window w && w.DataContext is MainWindowViewModel vm)
                 vm.NextWallpaperCommand.Execute(monitor);
         };
