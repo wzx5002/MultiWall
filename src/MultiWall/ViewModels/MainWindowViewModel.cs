@@ -240,29 +240,45 @@ public partial class MainWindowViewModel : ViewModelBase
                 continue;
 
             monitor.LastAdvanceTime = now;
-            if (monitor.SlideshowShuffle && monitor.SlideshowImages.Count > 1)
-            {
-                if (monitor.ShuffledOrder.Count == 0 || monitor.ShuffledPosition >= monitor.ShuffledOrder.Count)
-                    monitor.RebuildShuffleOrder(_random);
-                monitor.CurrentSlideshowIndex = monitor.ShuffledOrder[monitor.ShuffledPosition];
-                monitor.ShuffledPosition++;
-            }
-            else
-            {
-                monitor.CurrentSlideshowIndex = (monitor.CurrentSlideshowIndex + 1)
-                    % monitor.SlideshowImages.Count;
-            }
-
-            var imagePath = monitor.SlideshowImages[monitor.CurrentSlideshowIndex];
-            _wallpaperService.SetWallpaper(monitor.DevicePath, imagePath);
-
-            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-            {
-                monitor.WallpaperPath = imagePath;
-            });
+            AdvanceSlideshow(monitor);
         }
 
         if (!anyActive) StopSlideshowTimer();
+    }
+
+    private void AdvanceSlideshow(MonitorInfo monitor)
+    {
+        if (monitor.SlideshowImages.Count == 0) return;
+
+        if (monitor.SlideshowShuffle && monitor.SlideshowImages.Count > 1)
+        {
+            if (monitor.ShuffledOrder.Count == 0 || monitor.ShuffledPosition >= monitor.ShuffledOrder.Count)
+                monitor.RebuildShuffleOrder(_random);
+            monitor.CurrentSlideshowIndex = monitor.ShuffledOrder[monitor.ShuffledPosition];
+            monitor.ShuffledPosition++;
+        }
+        else
+        {
+            monitor.CurrentSlideshowIndex = (monitor.CurrentSlideshowIndex + 1)
+                % monitor.SlideshowImages.Count;
+        }
+
+        var imagePath = monitor.SlideshowImages[monitor.CurrentSlideshowIndex];
+        _wallpaperService.SetWallpaper(monitor.DevicePath, imagePath);
+
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            monitor.WallpaperPath = imagePath;
+        });
+    }
+
+    [RelayCommand]
+    private void NextWallpaper(MonitorInfo? monitor)
+    {
+        if (monitor?.Mode != WallpaperMode.Slideshow) return;
+        if (!monitor.IsSlideshowRunning || monitor.SlideshowImages.Count == 0) return;
+        monitor.LastAdvanceTime = DateTime.UtcNow;
+        AdvanceSlideshow(monitor);
     }
 
     private void ReleaseOtherPreviews(MonitorInfo active)

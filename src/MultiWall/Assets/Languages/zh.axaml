@@ -42,4 +42,5 @@
     <sys:String x:Key="Label.Downloading">正在下载...</sys:String>
     <sys:String x:Key="Label.Updating">正在安装更新，即将重启...</sys:String>
     <sys:String x:Key="Label.Shuffle">随机顺序</sys:String>
+    <sys:String x:Key="Label.NextWallpaper">下一张壁纸</sys:String>
 </ResourceDictionary>
