@@ -51,6 +51,8 @@ public partial class App : Application
             SetupTrayIcon();
             Logger.Info("App", "TrayIcon set up");
             ApplyAutoStart();
+            ShellContextMenuService.Register();
+            Logger.Info("App", "Shell context menu registered");
             _vm.RefreshMonitorsCommand.Execute(null);
             _vm.LoadAndApplyConfig();
             RebuildTrayMenu();
@@ -154,6 +156,7 @@ public partial class App : Application
 
     private void ForceExit()
     {
+        ShellContextMenuService.Unregister();
         _vm?.SaveConfig();
         _trayIcon?.Dispose();
         _desktop?.Shutdown();
@@ -161,6 +164,7 @@ public partial class App : Application
 
     private void OnExit(object? sender, ControlledApplicationLifetimeExitEventArgs e)
     {
+        ShellContextMenuService.Unregister();
         _vm?.SaveConfig();
         _trayIcon?.Dispose();
     }
